@@ -32,3 +32,15 @@ sysinfo.txt
 # Builds
 *.apk
 *.unitypackage
+
+# Test files
+hand_mono.jpg
+hand_color.jpg
+hand_mono_gray.jpg
+hand_color_gray.jpg
+Biomet-Handscan/.vs/Biomet-Handscan/v15/Server/sqlite3/storage.ide-wal
+Biomet-Handscan/.vs/Biomet-Handscan/v15/Server/sqlite3/storage.ide-shm
+Biomet-Handscan/.vs/Biomet-Handscan/v15/Server/sqlite3/storage.ide
+Biomet-Handscan/.vs/Biomet-Handscan/v15/Server/sqlite3/db.lock
+Biomet-Handscan/Biomet-Project/bin/
+Biomet-Handscan/Biomet-Project/obj/
