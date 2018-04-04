@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Kaliko.ImageLibrary;
+using System;
 using System.Windows.Forms;
 
 namespace Biomet_Project
@@ -11,12 +12,19 @@ namespace Biomet_Project
         [STAThread]
         static void Main()
         {
-            ImageProcessor ip = new ImageProcessor();
-            ip.LoadImage();
-
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+
+            MainWindow window = new MainWindow();
+            ImageProcessor ip = new ImageProcessor();
+
+            KalikoImage initialImage = ip.LoadImage();
+            window.initialImageBox.Image = initialImage.GetAsBitmap();
+
+            KalikoImage processedImage = ip.GetProcessedImage(initialImage);
+            window.processedImageBox.Image = processedImage.GetAsBitmap();
+
+            Application.Run(window);
         }
     }
 }
