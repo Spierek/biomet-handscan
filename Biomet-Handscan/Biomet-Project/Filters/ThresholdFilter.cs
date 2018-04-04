@@ -4,8 +4,6 @@
     {
         private byte m_Threshold = THRESHOLD_DEFAULT;
 
-        private const byte THRESHOLD_MIN = 0;
-        private const byte THRESHOLD_MAX = 255;
         private const byte THRESHOLD_DEFAULT = 128;
 
         public ThresholdFilter(byte threshold = THRESHOLD_DEFAULT)
@@ -24,23 +22,26 @@
 
             for (int i = 0, l = byteArray.Length; i < l; i += 4)
             {
-                byteArray[i] = GetThresholdValue(byteArray[i]);             // b
-                byteArray[i + 1] = GetThresholdValue(byteArray[i + 1]);     // g
-                byteArray[i + 2] = GetThresholdValue(byteArray[i + 2]);     // r
+                byte grayscale = FilterHelper.GetGrayscalePixel(byteArray[i + 2], byteArray[i + 1], byteArray[i]);
+                byte value = GetThresholdValue(grayscale);
+                byteArray[i] = value;       // b
+                byteArray[i + 1] = value;   // g
+                byteArray[i + 2] = value;   // r
             }
 
             image.ByteArray = byteArray;
         }
 
+        // return 0 if below threshold or 1 if equals/above threshold
         private byte GetThresholdValue(byte input)
         {
             if (input < m_Threshold)
             {
-                return THRESHOLD_MIN;
+                return byte.MinValue;
             }
             else
             {
-                return THRESHOLD_MAX;
+                return byte.MaxValue;
             }
         }
     }

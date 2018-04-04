@@ -2,11 +2,9 @@
 
 namespace Kaliko.ImageLibrary.Filters
 {
-    // Find lowest pixel value, subtract from all pixels,
+    // Find lowest pixel value, subtract from all pixels, then multiply by difference between highest and 255
     public class NormalizationFilter : IFilter
     {
-        private const byte MAX_VALUE = 255;
-
         public NormalizationFilter()
         {
         }
@@ -29,7 +27,7 @@ namespace Kaliko.ImageLibrary.Filters
                 byteArray[i + 2] -= lowest[2];  // r
             }
 
-            // multiply all pixels by (MAX_VALUE / highest value for that channel)
+            // multiply all pixels by (255 / highest value for that channel)
             byte[] highest = FindHighestValues(image);
             float[] multipliers = GetMultipliers(highest);
             for (int i = 0, l = byteArray.Length; i < l; i += 4)
@@ -45,7 +43,7 @@ namespace Kaliko.ImageLibrary.Filters
         private byte[] FindLowestValues(KalikoImage image)
         {
             byte[] byteArray = image.ByteArray;
-            byte[] lowest = new byte[4] { MAX_VALUE, MAX_VALUE, MAX_VALUE, MAX_VALUE };
+            byte[] lowest = new byte[4] { byte.MaxValue, byte.MaxValue, byte.MaxValue, byte.MaxValue};
             for (int i = 0, l = byteArray.Length; i < l; i += 4)
             {
                 if (byteArray[i] < lowest[0])
@@ -68,7 +66,7 @@ namespace Kaliko.ImageLibrary.Filters
         private byte[] FindHighestValues(KalikoImage image)
         {
             byte[] byteArray = image.ByteArray;
-            byte[] highest = new byte[4] { 0, 0, 0, 0 };
+            byte[] highest = new byte[4] { byte.MinValue, byte.MinValue, byte.MinValue, byte.MinValue};
             for (int i = 0, l = byteArray.Length; i < l; i += 4)
             {
                 if (byteArray[i] > highest[0])
@@ -92,10 +90,10 @@ namespace Kaliko.ImageLibrary.Filters
         {
             float[] multipliers = new float[4]
             {
-                MAX_VALUE / (float)values[0],
-                MAX_VALUE / (float)values[1],
-                MAX_VALUE / (float)values[2],
-                MAX_VALUE / (float)values[3]
+                byte.MaxValue / (float)values[0],
+                byte.MaxValue / (float)values[1],
+                byte.MaxValue / (float)values[2],
+                byte.MaxValue / (float)values[3]
             };
 
             return multipliers;
