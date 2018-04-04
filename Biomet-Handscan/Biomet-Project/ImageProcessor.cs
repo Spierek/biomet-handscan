@@ -20,6 +20,9 @@ namespace Biomet_Project
             FastGaussianBlurFilter gaussian = new FastGaussianBlurFilter(3f);
             image.ApplyFilter(gaussian);
 
+            ThresholdFilter threshold = new ThresholdFilter();
+            image.ApplyFilter(threshold);
+
             if (saveResult)
             {
                 image.SaveJpg("hand_blurred.jpg", 90);
