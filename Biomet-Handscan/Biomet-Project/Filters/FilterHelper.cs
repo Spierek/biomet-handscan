@@ -9,9 +9,8 @@
 
         public static byte GetGrayscalePixel(byte r, byte g, byte b)
         {
-            // #TODO LS improved RGB sampling?
-            float value = (float)r + (float)g + (float)b;
-            value /= 3f;
+            // using RGB -> YUV sampling for improved results
+            float value = r * 0.299f + g * 0.587f + b * 0.114f;
             return (byte)value;
         }
     }

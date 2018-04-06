@@ -5,10 +5,6 @@ namespace Kaliko.ImageLibrary.Filters
     // Find lowest pixel value, subtract from all pixels, then multiply by difference between highest and 255
     public class NormalizationFilter : IFilter
     {
-        public NormalizationFilter()
-        {
-        }
-
         public virtual void Run(KalikoImage image)
         {
             Normalize(image);
