@@ -1,6 +1,6 @@
 ﻿namespace Kaliko.ImageLibrary
 {
-    public static class FilterHelper
+    public static class ImageHelper
     {
         public static byte GetGrayscalePixel(byte[] channels)
         {

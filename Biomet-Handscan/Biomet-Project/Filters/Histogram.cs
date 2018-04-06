@@ -18,7 +18,7 @@ namespace Kaliko.ImageLibrary
         {
             for (int i = 0, l = byteArray.Length; i < l; i += 4)
             {
-                byte grayscale = FilterHelper.GetGrayscalePixel(byteArray[i + 2], byteArray[i + 1], byteArray[i]);
+                byte grayscale = ImageHelper.GetGrayscalePixel(byteArray[i + 2], byteArray[i + 1], byteArray[i]);
                 Data[grayscale]++;
             }
         }

@@ -14,24 +14,29 @@ namespace Biomet_Project
 
         public KalikoImage GetProcessedImage(KalikoImage image, bool saveResult = false)
         {
+            KalikoImage processedImage = image.Clone();
+
             NormalizationFilter normalization = new NormalizationFilter();
-            image.ApplyFilter(normalization);
+            processedImage.ApplyFilter(normalization);
 
-            FastGaussianBlurFilter gaussian = new FastGaussianBlurFilter(3f);
-            image.ApplyFilter(gaussian);
+            FastGaussianBlurFilter gaussian = new FastGaussianBlurFilter(5f);
+            processedImage.ApplyFilter(gaussian);
 
-            Histogram histogram = new Histogram(image);
+            Histogram histogram = new Histogram(processedImage);
             byte filteredThreshold = histogram.GetThresholdLevel();
 
             ThresholdFilter threshold = new ThresholdFilter(filteredThreshold);
-            image.ApplyFilter(threshold);
+            processedImage.ApplyFilter(threshold);
+
+            AutoCropFilter autoCrop = new AutoCropFilter();
+            processedImage.ApplyFilter(autoCrop);
 
             if (saveResult)
             {
-                image.SaveJpg("hand_blurred.jpg", 90);
+                processedImage.SaveJpg("hand_blurred.jpg", 90);
             }
 
-            return image;
+            return processedImage;
         }
     }
 }
