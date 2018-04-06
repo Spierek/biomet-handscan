@@ -8,7 +8,7 @@ namespace Biomet_Project
     {
         public KalikoImage LoadImage()
         {
-            KalikoImage image = new KalikoImage(@"C:\Projects\Biomet-Handscan\hand_mono.jpg");
+            KalikoImage image = new KalikoImage(@"C:\Projects\Biomet-Handscan\hand_color.jpg");
             return image;
         }
 
@@ -20,7 +20,10 @@ namespace Biomet_Project
             FastGaussianBlurFilter gaussian = new FastGaussianBlurFilter(3f);
             image.ApplyFilter(gaussian);
 
-            ThresholdFilter threshold = new ThresholdFilter();
+            Histogram histogram = new Histogram(image);
+            byte filteredThreshold = histogram.GetThresholdLevel();
+
+            ThresholdFilter threshold = new ThresholdFilter(filteredThreshold);
             image.ApplyFilter(threshold);
 
             if (saveResult)

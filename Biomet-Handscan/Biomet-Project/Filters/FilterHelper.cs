@@ -9,6 +9,7 @@
 
         public static byte GetGrayscalePixel(byte r, byte g, byte b)
         {
+            // #TODO LS improved RGB sampling?
             float value = (float)r + (float)g + (float)b;
             value /= 3f;
             return (byte)value;
