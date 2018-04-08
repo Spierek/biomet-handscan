@@ -1,4 +1,5 @@
 ﻿using Kaliko.ImageLibrary;
+using Kaliko.ImageLibrary.BitFilters;
 using Kaliko.ImageLibrary.FastFilters;
 using Kaliko.ImageLibrary.Filters;
 
@@ -16,6 +17,9 @@ namespace Biomet_Project
         {
             KalikoImage processedImage = image.Clone();
 
+            processedImage.Resize(430, 500);        // for faster operations / debugging
+
+            // operating on image
             NormalizationFilter normalization = new NormalizationFilter();
             processedImage.ApplyFilter(normalization);
 
@@ -28,15 +32,21 @@ namespace Biomet_Project
             ThresholdFilter threshold = new ThresholdFilter(filteredThreshold);
             processedImage.ApplyFilter(threshold);
 
+            // operating on bit matrix for faster calculations
+            BitMatrix matrix = new BitMatrix(processedImage);
+
             AutoCropFilter autoCrop = new AutoCropFilter();
-            processedImage.ApplyFilter(autoCrop);
+            matrix.ApplyFilter(autoCrop);
+
+            // after performing bit matrix operations, get a new image
+            KalikoImage resultingImage = matrix.ToImage();
 
             if (saveResult)
             {
-                processedImage.SaveJpg("hand_blurred.jpg", 90);
+                resultingImage.SaveJpg("hand_blurred.jpg", 90);
             }
 
-            return processedImage;
+            return resultingImage;
         }
     }
 }

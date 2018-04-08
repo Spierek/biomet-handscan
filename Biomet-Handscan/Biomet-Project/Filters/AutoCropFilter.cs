@@ -1,33 +1,36 @@
-﻿namespace Kaliko.ImageLibrary.Filters
+﻿namespace Kaliko.ImageLibrary.BitFilters
 {
-    public class AutoCropFilter : IFilter
+    public class AutoCropFilter : IBitFilter
     {
-        public void Run(KalikoImage image)
+        public void Run(BitMatrix matrix)
         {
-            PerformAutoCrop(image);
+            PerformAutoCrop(matrix);
         }
 
-        private void PerformAutoCrop(KalikoImage image)
+        private void PerformAutoCrop(BitMatrix matrix)
         {
             int left, right, top, bottom;
-            GetLastEmptyLeftRow(image, out left);
-            GetLastEmptyRightRow(image, out right);
-            GetLastEmptyTopRow(image, out top);
-            GetLastEmptyBottomRow(image, out bottom);
+            GetLastEmptyLeftRow(matrix, out left);
+            GetLastEmptyRightRow(matrix, out right);
+            GetLastEmptyTopRow(matrix, out top);
+            GetLastEmptyBottomRow(matrix, out bottom);
 
-            image.Crop(left, top, image.Width - left - (image.Width - right), image.Height - top - (image.Height - bottom));
+            matrix.Crop(
+                left,
+                top,
+                matrix.RowCount - left - (matrix.RowCount - right),
+                matrix.ColumnCount - top - (matrix.ColumnCount - bottom)
+                );
         }
 
-        private void GetLastEmptyLeftRow(KalikoImage image, out int left)
+        private void GetLastEmptyLeftRow(BitMatrix matrix, out int left)
         {
-            byte[] byteArray = image.ByteArray;
-
             left = 0;
-            int leftLimit = image.Width / 2;
+            int leftLimit = matrix.RowCount / 2;
 
             while (left < leftLimit)
             {
-                if (!CheckColumnBlack(byteArray, left, image.Height))
+                if (!CheckColumnBlack(matrix, left))
                 {
                     return;
                 }
@@ -35,16 +38,14 @@
             }
         }
 
-        private void GetLastEmptyRightRow(KalikoImage image, out int right)
+        private void GetLastEmptyRightRow(BitMatrix matrix, out int right)
         {
-            byte[] byteArray = image.ByteArray;
-
-            right = image.Width;
-            int rightLimit = image.Width / 2 + 1;
+            right = matrix.RowCount;
+            int rightLimit = matrix.RowCount / 2 + 1;
 
             while (right > rightLimit)
             {
-                if (!CheckColumnBlack(byteArray, right - 1, image.Height))
+                if (!CheckColumnBlack(matrix, right - 1))
                 {
                     return;
                 }
@@ -52,16 +53,14 @@
             }
         }
 
-        private void GetLastEmptyTopRow(KalikoImage image, out int top)
+        private void GetLastEmptyTopRow(BitMatrix matrix, out int top)
         {
-            byte[] byteArray = image.ByteArray;
-
             top = 0;
-            int topLimit = image.Height / 2;
+            int topLimit = matrix.RowCount / 2;
 
             while (top < topLimit)
             {
-                if (!CheckRowBlack(byteArray, top, image.Width))
+                if (!CheckRowBlack(matrix, top))
                 {
                     return;
                 }
@@ -69,16 +68,14 @@
             }
         }
 
-        private void GetLastEmptyBottomRow(KalikoImage image, out int bottom)
+        private void GetLastEmptyBottomRow(BitMatrix matrix, out int bottom)
         {
-            byte[] byteArray = image.ByteArray;
-
-            bottom = image.Height;
-            int bottomLimit = image.Height / 2 + 1;
+            bottom = matrix.ColumnCount;
+            int bottomLimit = matrix.ColumnCount / 2 + 1;
 
             while (bottom > bottomLimit)
             {
-                if (!CheckRowBlack(byteArray, bottom - 1, image.Width))
+                if (!CheckRowBlack(matrix, bottom - 1))
                 {
                     return;
                 }
@@ -87,14 +84,11 @@
         }
 
         // check if column contains only black pixels
-        private bool CheckColumnBlack(byte[] byteArray, int x, int height)
+        private bool CheckColumnBlack(BitMatrix matrix, int x)
         {
-            int heightMod = height * 4;
-            for (int i = 0, l = heightMod; i < l; i += 4)
+            for (int y = 0; y < matrix.ColumnCount; ++y)
             {
-                int offset = i + x * heightMod;
-                byte grayscale = ImageHelper.GetGrayscalePixel(byteArray[offset + 2], byteArray[offset + 1], byteArray[offset]);
-                if (grayscale > byte.MinValue)
+                if (matrix[x, y])
                 {
                     return false;
                 }
@@ -104,15 +98,11 @@
         }
 
         // check if row contains only black pixels
-        private bool CheckRowBlack(byte[] byteArray, int y, int width)
+        private bool CheckRowBlack(BitMatrix matrix, int y)
         {
-            int widthMod = width * 4;
-            int offset = y * widthMod;
-            for (int i = 0, l = widthMod; i < l; i += 4)
+            for (int x = 0; x < matrix.RowCount; ++x)
             {
-                int currOffset = i + offset;
-                byte grayscale = ImageHelper.GetGrayscalePixel(byteArray[currOffset + 2], byteArray[currOffset + 1], byteArray[currOffset]);
-                if (grayscale > byte.MinValue)
+                if (matrix[x, y])
                 {
                     return false;
                 }
