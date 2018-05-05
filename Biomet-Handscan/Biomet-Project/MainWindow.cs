@@ -15,6 +15,15 @@ namespace Biomet_Project
         public MainWindow()
         {
             InitializeComponent();
+            PreviewKeyDown += HandleEsc;
+        }
+
+        private void HandleEsc(object sender, PreviewKeyDownEventArgs e)
+        {
+            if (e.KeyCode == Keys.Escape)
+            {
+                Close();
+            }
         }
     }
 }
