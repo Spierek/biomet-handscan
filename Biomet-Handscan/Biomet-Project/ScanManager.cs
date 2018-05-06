@@ -54,5 +54,22 @@ namespace Biomet_Project
                 m_Twain.StartScanning(m_CurrentScanSettings);
             }
         }
+
+        public void SelectScanSource()
+        {
+            m_Twain.SelectSource();
+        }
+
+        public string GetActiveSourceLabel()
+        {
+            if (IsInitialized)
+            {
+                return string.Format("Scan source: {0}", m_Twain.DefaultSourceName);
+            }
+            else
+            {
+                return "ERROR: No scanners detected! Please make sure that a scanner is connected to the computer.";
+            }
+        }
     }
 }

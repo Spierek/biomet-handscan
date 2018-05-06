@@ -16,8 +16,7 @@ namespace Biomet_Project
     {
         private ScanManager m_ScanManager;
         private ImageProcessor m_ImageProcessor;
-
-        private bool m_ScanningEnabled = false;
+        private Bitmap m_CurrentBitmap;
 
         public MainWindow()
         {
@@ -33,24 +32,17 @@ namespace Biomet_Project
         {
             m_ScanManager = new ScanManager();
             m_ScanManager.Initialize(this);
+            scanSourceLabel.Text = m_ScanManager.GetActiveSourceLabel();
 
             if (m_ScanManager.IsInitialized)
             {
                 m_ScanManager.Twain.TransferImage += HandleScanFinished;
-                infoLabel.Text = "Scanner ready.";
-            }
-            else
-            {
-                infoLabel.Text = "ERROR: No scanners detected! Please make sure that a scanner is connected to the computer.";
             }
         }
 
         private void InitializeProcessor()
         {
             m_ImageProcessor = new ImageProcessor();
-            KalikoImage initialImage = m_ImageProcessor.LoadImage();
-            KalikoImage processedImage = m_ImageProcessor.GetProcessedImage(initialImage);
-            imageBox.Image = processedImage.GetAsBitmap();
         }
 
         private void InitializeInput()
@@ -59,13 +51,22 @@ namespace Biomet_Project
 
             // disable all buttons by default
             scanButton.Enabled = false;
+            scanSelectButton.Enabled = false;
             processButton.Enabled = false;
+            verifyAddButton.Enabled = false;
             verifyButton.Enabled = false;
 
             if (m_ScanManager.IsInitialized)
             {
                 scanButton.Enabled = true;
+                scanSelectButton.Enabled = true;
             }
+        }
+
+        private void SetCurrentBitmap(Bitmap bitmap)
+        {
+            m_CurrentBitmap = bitmap;
+            imageBox.Image = m_CurrentBitmap;
         }
 
         private void HandleEscPressed(object sender, PreviewKeyDownEventArgs e)
@@ -79,6 +80,7 @@ namespace Biomet_Project
         private void scanButton_Click(object sender, EventArgs e)
         {
             processButton.Enabled = false;
+            verifyAddButton.Enabled = false;
             verifyButton.Enabled = false;
 
             m_ScanManager.StartScan();
@@ -90,12 +92,35 @@ namespace Biomet_Project
 
             if (e.Image != null)
             {
-                imageBox.Image = e.Image;
+                SetCurrentBitmap(e.Image);
                 processButton.Enabled = true;
             }
         }
 
-        private void processButton_Click(object sender, EventArgs e)
+        private void scanSelectButton_Click(object sender, EventArgs e)
+        {
+            m_ScanManager.SelectScanSource();
+            scanSourceLabel.Text = m_ScanManager.GetActiveSourceLabel();
+        }
+
+        private void processButton_Click_1(object sender, EventArgs e)
+        {
+            if (m_CurrentBitmap != null)
+            {
+                KalikoImage scanImage = new KalikoImage(m_CurrentBitmap);
+                KalikoImage processedImage = m_ImageProcessor.GetProcessedImage(scanImage);
+                if (processedImage != null)
+                {
+                    SetCurrentBitmap(processedImage.GetAsBitmap());
+
+                    processButton.Enabled = false;
+                    verifyAddButton.Enabled = true;
+                    verifyButton.Enabled = true;
+                }
+            }
+        }
+
+        private void verifyAddButton_Click(object sender, EventArgs e)
         {
 
         }

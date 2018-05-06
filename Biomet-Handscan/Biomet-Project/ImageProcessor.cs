@@ -7,12 +7,6 @@ namespace Biomet_Project
 {
     public class ImageProcessor
     {
-        public KalikoImage LoadImage()
-        {
-            KalikoImage image = new KalikoImage(@"C:\Projects\Biomet-Handscan\hand_color.jpg");
-            return image;
-        }
-
         public KalikoImage GetProcessedImage(KalikoImage image, bool saveResult = false)
         {
             KalikoImage processedImage = image.Clone();
@@ -47,6 +41,12 @@ namespace Biomet_Project
             }
 
             return resultingImage;
+        }
+
+        public KalikoImage DEBUG_LoadImage()
+        {
+            KalikoImage image = new KalikoImage(@"C:\Projects\Biomet-Handscan\hand_color.jpg");
+            return image;
         }
     }
 }
