@@ -8,6 +8,9 @@ namespace Biomet_Project
 {
     public class ImageProcessor
     {
+        private const int XSIZE = 420;
+        private const int YSIZE = 594;      // A4
+
         public KalikoImage GetProcessedMarkers(Bitmap bitmap)
         {
             KalikoImage image = new KalikoImage(bitmap);
@@ -37,7 +40,7 @@ namespace Biomet_Project
 
         private void ProcessImage(KalikoImage image)
         {
-            image.Resize(430, 500);        // for faster operations / debugging
+            image.Resize(XSIZE, YSIZE);        // for faster operations / debugging
 
             // operating on image
             NormalizationFilter normalization = new NormalizationFilter();
