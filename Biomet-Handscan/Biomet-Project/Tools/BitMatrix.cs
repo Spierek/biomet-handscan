@@ -1,25 +1,23 @@
 ﻿using System;
+using System.IO;
 
 namespace Kaliko.ImageLibrary.BitFilters
 {
     // via http://www.pvladov.com/2012/05/bit-matrix-in-c-sharp.html
     public class BitMatrix
     {
-        private KalikoImage m_Image;
         private byte[] m_Data;
 
-        private int m_RowCount;
-        public int RowCount { get { return m_RowCount; } }
+        private int m_Width;
+        public int Width { get { return m_Width; } }
 
-        private int m_ColumnCount;
-        public int ColumnCount { get { return m_ColumnCount; } }
+        private int m_Height;
+        public int Height { get { return m_Height; } }
 
-        public BitMatrix(int rowCount, int columnCount)
+        public BitMatrix(int width, int height)
         {
-            m_Image = new KalikoImage(rowCount, columnCount);
-
-            m_RowCount = rowCount;
-            m_ColumnCount = columnCount;
+            m_Width = width;
+            m_Height = height;
 
             // Allocate the needed number of bytes
             int byteCount = GetByteCount();
@@ -28,14 +26,12 @@ namespace Kaliko.ImageLibrary.BitFilters
 
         public BitMatrix(KalikoImage image) : this(image.Width, image.Height)
         {
-            m_Image = image.Clone();    // this is not exactly nice but for unknown reasons creating a new image does not work properly
-
-            byte[] byteArray = m_Image.ByteArray;
+            byte[] byteArray = image.ByteArray;
             for (int y = 0; y < image.Height; ++y)
             {
                 for (int x = 0; x < image.Width; ++x)
                 {
-                    int offset = (x + y * m_RowCount) * 4;
+                    int offset = (x + y * m_Width) * 4;
                     this[x, y] = (byteArray[offset] > 128);
                 }
             }
@@ -43,13 +39,14 @@ namespace Kaliko.ImageLibrary.BitFilters
 
         public KalikoImage ToImage()
         {
-            byte[] byteArray = m_Image.ByteArray;
+            KalikoImage image = new KalikoImage(Width, Height);
+            byte[] byteArray = image.ByteArray;
 
-            for (int y = 0; y < m_ColumnCount; ++y)
+            for (int y = 0; y < m_Height; ++y)
             {
-                for (int x = 0; x < m_RowCount; ++x)
+                for (int x = 0; x < m_Width; ++x)
                 {
-                    int offset = (x + y * m_RowCount) * 4;
+                    int offset = (x + y * m_Width) * 4;
                     byte value = this[x, y] ? byte.MaxValue : byte.MinValue;
 
                     byteArray[offset] = value;
@@ -59,38 +56,40 @@ namespace Kaliko.ImageLibrary.BitFilters
                 }
             }
 
-            return m_Image;
+            image.ByteArray = byteArray;
+
+            return image;
         }
         /// <summary>
         /// Gets/Sets the value at the specified row and column index.
         /// </summary>
-        /// <param name="rowIndex"></param>
-        /// <param name="columnIndex"></param>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
         /// <returns></returns>
-        public bool this[int rowIndex, int columnIndex]
+        public bool this[int x, int y]
         {
             get
             {
-                if (rowIndex < 0 || rowIndex >= m_RowCount)
-                    throw new ArgumentOutOfRangeException("rowIndex");
+                if (x < 0 || x >= m_Width)
+                    throw new ArgumentOutOfRangeException("x");
 
-                if (columnIndex < 0 || columnIndex >= m_ColumnCount)
-                    throw new ArgumentOutOfRangeException("columnIndex");
+                if (y < 0 || y >= m_Height)
+                    throw new ArgumentOutOfRangeException("y");
 
-                int pos = rowIndex * m_ColumnCount + columnIndex;
+                int pos = x + y * m_Width;
                 int index = pos % 8;
                 pos >>= 3;
                 return (m_Data[pos] & (1 << index)) != 0;
             }
             set
             {
-                if (rowIndex < 0 || rowIndex >= m_RowCount)
-                    throw new ArgumentOutOfRangeException("rowIndex");
+                if (x < 0 || x >= m_Width)
+                    throw new ArgumentOutOfRangeException("x");
 
-                if (columnIndex < 0 || columnIndex >= m_ColumnCount)
-                    throw new ArgumentOutOfRangeException("columnIndex");
+                if (y < 0 || y >= m_Height)
+                    throw new ArgumentOutOfRangeException("y");
 
-                int pos = rowIndex * m_ColumnCount + columnIndex;
+                int pos = x + y * m_Width;
                 int index = pos % 8;
                 pos >>= 3;
                 m_Data[pos] &= (byte)(~(1 << index));
@@ -115,11 +114,11 @@ namespace Kaliko.ImageLibrary.BitFilters
             }
 
             byte[] oldData = m_Data;
-            int oldWidth = m_RowCount;
-            int oldHeight = m_ColumnCount;
+            int oldWidth = m_Width;
+            int oldHeight = m_Height;
 
-            m_RowCount = width;
-            m_ColumnCount = height;
+            m_Width = width;
+            m_Height = height;
 
             int byteCount = GetByteCount();
             m_Data = new byte[byteCount];
@@ -136,7 +135,7 @@ namespace Kaliko.ImageLibrary.BitFilters
                     if (oldX >= 0 && oldX < oldWidth &&
                         oldY >= 0 && oldY < oldHeight)
                     {
-                        int pos = oldX * m_ColumnCount + oldY;
+                        int pos = oldX + oldY * m_Width;
                         int index = pos % 8;
                         pos >>= 3;
 
@@ -144,13 +143,11 @@ namespace Kaliko.ImageLibrary.BitFilters
                     }
                 }
             }
-
-            m_Image.Crop(x, y, width, height);
         }
 
         private int GetByteCount()
         {
-            int bitCount = m_RowCount * m_ColumnCount;
+            int bitCount = m_Width * m_Height;
             int byteCount = bitCount >> 3;
             if (bitCount % 8 != 0)
             {

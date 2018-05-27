@@ -57,7 +57,6 @@ namespace Biomet_Project
             previewMarkersProcessedButton.Enabled = false;
             previewImageScanButton.Enabled = false;
             previewImageProcessedButton.Enabled = false;
-            previewFinalButton.Enabled = false;
 
             verifyAddButton.Enabled = false;
             verifyButton.Enabled = false;
@@ -121,7 +120,7 @@ namespace Biomet_Project
             if (bitmap != null)
             {
                 m_ScannedMarkers = bitmap;
-                m_ProcessedMarkers = m_ImageProcessor.GetProcessedImage(m_ScannedMarkers);
+                m_ProcessedMarkers = m_ImageProcessor.GetProcessedMarkers(m_ScannedMarkers);
                 if (preview)
                 {
                     DisplayBitmap(m_ScannedMarkers);
@@ -144,7 +143,7 @@ namespace Biomet_Project
             if (bitmap != null)
             {
                 m_ScannedImage = bitmap;
-                m_ProcessedImage = m_ImageProcessor.GetProcessedImage(m_ScannedImage);
+                m_ProcessedImage = m_ImageProcessor.GetProcessedImage(m_ScannedImage, m_ProcessedMarkers);
                 if (preview)
                 {
                     DisplayBitmap(m_ScannedImage);

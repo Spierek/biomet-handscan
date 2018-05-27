@@ -36,7 +36,6 @@
             this.scanSelectButton = new System.Windows.Forms.Button();
             this.scanSourceLabel = new System.Windows.Forms.Label();
             this.processBox = new System.Windows.Forms.GroupBox();
-            this.previewFinalButton = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.previewImageProcessedButton = new System.Windows.Forms.Button();
             this.button6 = new System.Windows.Forms.Button();
@@ -130,25 +129,14 @@
             // 
             // processBox
             // 
-            this.processBox.Controls.Add(this.previewFinalButton);
             this.processBox.Controls.Add(this.groupBox3);
             this.processBox.Controls.Add(this.groupBox1);
-            this.processBox.Location = new System.Drawing.Point(12, 260);
+            this.processBox.Location = new System.Drawing.Point(12, 276);
             this.processBox.Name = "processBox";
-            this.processBox.Size = new System.Drawing.Size(240, 178);
+            this.processBox.Size = new System.Drawing.Size(240, 146);
             this.processBox.TabIndex = 7;
             this.processBox.TabStop = false;
             this.processBox.Text = "PREVIEW";
-            // 
-            // previewFinalButton
-            // 
-            this.previewFinalButton.Location = new System.Drawing.Point(6, 143);
-            this.previewFinalButton.Name = "previewFinalButton";
-            this.previewFinalButton.Size = new System.Drawing.Size(228, 26);
-            this.previewFinalButton.TabIndex = 7;
-            this.previewFinalButton.Text = "Final Composite";
-            this.previewFinalButton.UseVisualStyleBackColor = true;
-            this.previewFinalButton.Click += new System.EventHandler(this.previewFinalButton_Click);
             // 
             // groupBox3
             // 
@@ -304,7 +292,6 @@
         private System.Windows.Forms.Button previewImageProcessedButton;
         private System.Windows.Forms.Button button6;
         private System.Windows.Forms.Button previewImageScanButton;
-        private System.Windows.Forms.Button previewFinalButton;
     }
 }
 

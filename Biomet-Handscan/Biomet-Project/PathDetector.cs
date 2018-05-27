@@ -25,9 +25,9 @@ namespace Biomet_Project
             if (matrix[x, y])
             {
                 if (x != 0 && !matrix[x - 1, y]) return true;
-                if (x != matrix.RowCount - 1 && !matrix[x + 1, y]) return true;
+                if (x != matrix.Width - 1 && !matrix[x + 1, y]) return true;
                 if (y != 0 && !matrix[x, y - 1]) return true;
-                if (y != matrix.ColumnCount - 1 && !matrix[x, y + 1]) return true;
+                if (y != matrix.Height - 1 && !matrix[x, y + 1]) return true;
             }
 
             return false;

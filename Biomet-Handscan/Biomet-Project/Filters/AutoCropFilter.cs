@@ -18,15 +18,15 @@
             matrix.Crop(
                 left,
                 top,
-                matrix.RowCount - left - (matrix.RowCount - right),
-                matrix.ColumnCount - top - (matrix.ColumnCount - bottom)
+                matrix.Width - left - (matrix.Width - right),
+                matrix.Height - top - (matrix.Height - bottom)
                 );
         }
 
         private void GetLastEmptyLeftRow(BitMatrix matrix, out int left)
         {
             left = 0;
-            int leftLimit = matrix.RowCount / 2;
+            int leftLimit = matrix.Width / 2;
 
             while (left < leftLimit)
             {
@@ -40,8 +40,8 @@
 
         private void GetLastEmptyRightRow(BitMatrix matrix, out int right)
         {
-            right = matrix.RowCount;
-            int rightLimit = matrix.RowCount / 2 + 1;
+            right = matrix.Width;
+            int rightLimit = matrix.Width / 2 + 1;
 
             while (right > rightLimit)
             {
@@ -56,7 +56,7 @@
         private void GetLastEmptyTopRow(BitMatrix matrix, out int top)
         {
             top = 0;
-            int topLimit = matrix.RowCount / 2;
+            int topLimit = matrix.Height / 2;
 
             while (top < topLimit)
             {
@@ -70,8 +70,8 @@
 
         private void GetLastEmptyBottomRow(BitMatrix matrix, out int bottom)
         {
-            bottom = matrix.ColumnCount;
-            int bottomLimit = matrix.ColumnCount / 2 + 1;
+            bottom = matrix.Height;
+            int bottomLimit = matrix.Height / 2 + 1;
 
             while (bottom > bottomLimit)
             {
@@ -86,7 +86,7 @@
         // check if column contains only black pixels
         private bool CheckColumnBlack(BitMatrix matrix, int x)
         {
-            for (int y = 0; y < matrix.ColumnCount; ++y)
+            for (int y = 0; y < matrix.Height; ++y)
             {
                 if (matrix[x, y])
                 {
@@ -100,7 +100,7 @@
         // check if row contains only black pixels
         private bool CheckRowBlack(BitMatrix matrix, int y)
         {
-            for (int x = 0; x < matrix.RowCount; ++x)
+            for (int x = 0; x < matrix.Width; ++x)
             {
                 if (matrix[x, y])
                 {

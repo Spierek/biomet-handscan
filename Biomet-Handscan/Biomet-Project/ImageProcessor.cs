@@ -8,13 +8,34 @@ namespace Biomet_Project
 {
     public class ImageProcessor
     {
-        public KalikoImage GetProcessedImage(Bitmap bitmap, bool saveResult = false)
+        public KalikoImage GetProcessedMarkers(Bitmap bitmap)
         {
             KalikoImage image = new KalikoImage(bitmap);
-            return GetProcessedImage(image, saveResult);
+            ProcessImage(image);
+
+            return image;
         }
 
-        public KalikoImage GetProcessedImage(KalikoImage image, bool saveResult = false)
+        public KalikoImage GetProcessedImage(Bitmap bitmap, KalikoImage markers)
+        {
+            KalikoImage image = new KalikoImage(bitmap);
+            ProcessImage(image);
+
+            // remove markers & crop image, operating on bit matrix for faster calculations
+            BitMatrix matrix = new BitMatrix(image);
+
+            SubtractFilter subFilter = new SubtractFilter(markers);
+            matrix.ApplyFilter(subFilter);
+
+            //AutoCropFilter autoCrop = new AutoCropFilter();
+            //matrix.ApplyFilter(autoCrop);
+
+            // after performing bit matrix operations, get a new image
+            KalikoImage bitImage = matrix.ToImage();
+            return bitImage;
+        }
+
+        private void ProcessImage(KalikoImage image)
         {
             image.Resize(430, 500);        // for faster operations / debugging
 
@@ -30,22 +51,6 @@ namespace Biomet_Project
 
             ThresholdFilter threshold = new ThresholdFilter(filteredThreshold);
             image.ApplyFilter(threshold);
-
-            // operating on bit matrix for faster calculations
-            BitMatrix matrix = new BitMatrix(image);
-
-            AutoCropFilter autoCrop = new AutoCropFilter();
-            matrix.ApplyFilter(autoCrop);
-
-            // after performing bit matrix operations, get a new image
-            KalikoImage resultingImage = matrix.ToImage();
-
-            if (saveResult)
-            {
-                resultingImage.SaveJpg("hand_blurred.jpg", 90);
-            }
-
-            return resultingImage;
         }
 
         public KalikoImage DEBUG_LoadMarkerScan()
