@@ -1,12 +1,6 @@
 ﻿using Kaliko.ImageLibrary;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using TwainDotNet;
 
@@ -16,7 +10,17 @@ namespace Biomet_Project
     {
         private ScanManager m_ScanManager;
         private ImageProcessor m_ImageProcessor;
-        private Bitmap m_CurrentBitmap;
+
+        // scanner input
+        private Bitmap m_ScannedImage;
+        private Bitmap m_ScannedMarkers;
+
+        // processed images
+        private KalikoImage m_ProcessedImage;
+        private KalikoImage m_ProcessedMarkers;
+
+        // final composite (image - markers)
+        private KalikoImage m_FinalComposite;
 
         public MainWindow()
         {
@@ -33,11 +37,6 @@ namespace Biomet_Project
             m_ScanManager = new ScanManager();
             m_ScanManager.Initialize(this);
             scanSourceLabel.Text = m_ScanManager.GetActiveSourceLabel();
-
-            if (m_ScanManager.IsInitialized)
-            {
-                m_ScanManager.Twain.TransferImage += HandleScanFinished;
-            }
         }
 
         private void InitializeProcessor()
@@ -49,24 +48,31 @@ namespace Biomet_Project
         {
             PreviewKeyDown += HandleEscPressed;
 
-            // disable all buttons by default
-            scanButton.Enabled = false;
+            // disable all buttons (except debug) by default
+            scanMarkersButton.Enabled = false;
+            scanImageButton.Enabled = false;
             scanSelectButton.Enabled = false;
-            processButton.Enabled = false;
+
+            previewMarkersScanButton.Enabled = false;
+            previewMarkersProcessedButton.Enabled = false;
+            previewImageScanButton.Enabled = false;
+            previewImageProcessedButton.Enabled = false;
+            previewFinalButton.Enabled = false;
+
             verifyAddButton.Enabled = false;
             verifyButton.Enabled = false;
 
+            // enable initial buttons
             if (m_ScanManager.IsInitialized)
             {
-                scanButton.Enabled = true;
                 scanSelectButton.Enabled = true;
+                scanMarkersButton.Enabled = true;
             }
         }
 
-        private void SetCurrentBitmap(Bitmap bitmap)
+        private void DisplayBitmap(Bitmap bitmap)
         {
-            m_CurrentBitmap = bitmap;
-            imageBox.Image = m_CurrentBitmap;
+            imageBox.Image = bitmap;
         }
 
         private void HandleEscPressed(object sender, PreviewKeyDownEventArgs e)
@@ -77,47 +83,111 @@ namespace Biomet_Project
             }
         }
 
-        private void scanButton_Click(object sender, EventArgs e)
-        {
-            processButton.Enabled = false;
-            verifyAddButton.Enabled = false;
-            verifyButton.Enabled = false;
-
-            m_ScanManager.StartScan();
-        }
-
-        private void HandleScanFinished(Object sender, TransferImageEventArgs e)
-        {
-            scanButton.Enabled = true;
-
-            if (e.Image != null)
-            {
-                SetCurrentBitmap(e.Image);
-                processButton.Enabled = true;
-            }
-        }
-
         private void scanSelectButton_Click(object sender, EventArgs e)
         {
             m_ScanManager.SelectScanSource();
             scanSourceLabel.Text = m_ScanManager.GetActiveSourceLabel();
         }
 
-        private void processButton_Click_1(object sender, EventArgs e)
+        private void markerScanButton_Click(object sender, EventArgs e)
         {
-            if (m_CurrentBitmap != null)
+            if (m_ScanManager.IsInitialized)
             {
-                KalikoImage scanImage = new KalikoImage(m_CurrentBitmap);
-                KalikoImage processedImage = m_ImageProcessor.GetProcessedImage(scanImage);
-                if (processedImage != null)
-                {
-                    SetCurrentBitmap(processedImage.GetAsBitmap());
-
-                    processButton.Enabled = false;
-                    verifyAddButton.Enabled = true;
-                    verifyButton.Enabled = true;
-                }
+                scanMarkersButton.Enabled = false;
+                m_ScanManager.Twain.TransferImage += HandleMarkerScanFinished;
+                m_ScanManager.StartScan();
             }
+        }
+
+        private void imageScanButton_Click(object sender, EventArgs e)
+        {
+            if (m_ScanManager.IsInitialized)
+            {
+                scanMarkersButton.Enabled = true;
+                m_ScanManager.Twain.TransferImage += HandleImageScanFinished;
+                m_ScanManager.StartScan();
+            }
+        }
+
+        private void HandleMarkerScanFinished(Object sender, TransferImageEventArgs e)
+        {
+            m_ScanManager.Twain.TransferImage -= HandleMarkerScanFinished;
+            scanMarkersButton.Enabled = true;
+            HandleMarkerScanFinished(e.Image, true);
+        }
+
+        private void HandleMarkerScanFinished(Bitmap bitmap, bool preview)
+        {
+            if (bitmap != null)
+            {
+                m_ScannedMarkers = bitmap;
+                m_ProcessedMarkers = m_ImageProcessor.GetProcessedImage(m_ScannedMarkers);
+                if (preview)
+                {
+                    DisplayBitmap(m_ScannedMarkers);
+                }
+
+                previewMarkersScanButton.Enabled = true;
+                previewMarkersProcessedButton.Enabled = true;
+            }
+        }
+
+        private void HandleImageScanFinished(Object sender, TransferImageEventArgs e)
+        {
+            m_ScanManager.Twain.TransferImage -= HandleImageScanFinished;
+            scanImageButton.Enabled = true;
+            HandleImageScanFinished(e.Image, true);
+        }
+
+        private void HandleImageScanFinished(Bitmap bitmap, bool preview)
+        {
+            if (bitmap != null)
+            {
+                m_ScannedImage = bitmap;
+                m_ProcessedImage = m_ImageProcessor.GetProcessedImage(m_ScannedImage);
+                if (preview)
+                {
+                    DisplayBitmap(m_ScannedImage);
+                }
+
+                previewImageScanButton.Enabled = true;
+                previewImageProcessedButton.Enabled = true;
+            }
+        }
+
+        private void debugScanButton_Click(object sender, EventArgs e)
+        {
+            KalikoImage markers = m_ImageProcessor.DEBUG_LoadMarkerScan();
+            if (markers != null)
+            {
+                HandleMarkerScanFinished(markers.GetAsBitmap(), false);
+            }
+
+            KalikoImage image = m_ImageProcessor.DEBUG_LoadImageScan();
+            if (image != null)
+            {
+                HandleImageScanFinished(image.GetAsBitmap(), true);
+            }
+        }
+
+        private void previewMarkersScanButton_Click(object sender, EventArgs e)
+        {
+            DisplayBitmap(m_ScannedMarkers);
+        }
+
+        private void previewMarkersProcessedButton_Click(object sender, EventArgs e)
+        {
+            DisplayBitmap(m_ProcessedMarkers.GetAsBitmap());
+        }
+
+        private void previewImageScanButton_Click(object sender, EventArgs e)
+        {
+            DisplayBitmap(m_ScannedImage);
+        }
+
+        private void previewImageProcessedButton_Click(object sender, EventArgs e)
+        {
+            DisplayBitmap(m_ProcessedImage.GetAsBitmap());
         }
 
         private void verifyAddButton_Click(object sender, EventArgs e)
@@ -126,6 +196,11 @@ namespace Biomet_Project
         }
 
         private void verifyButton_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void previewFinalButton_Click(object sender, EventArgs e)
         {
 
         }

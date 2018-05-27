@@ -2,32 +2,37 @@
 using Kaliko.ImageLibrary.BitFilters;
 using Kaliko.ImageLibrary.FastFilters;
 using Kaliko.ImageLibrary.Filters;
+using System.Drawing;
 
 namespace Biomet_Project
 {
     public class ImageProcessor
     {
+        public KalikoImage GetProcessedImage(Bitmap bitmap, bool saveResult = false)
+        {
+            KalikoImage image = new KalikoImage(bitmap);
+            return GetProcessedImage(image, saveResult);
+        }
+
         public KalikoImage GetProcessedImage(KalikoImage image, bool saveResult = false)
         {
-            KalikoImage processedImage = image.Clone();
-
-            processedImage.Resize(430, 500);        // for faster operations / debugging
+            image.Resize(430, 500);        // for faster operations / debugging
 
             // operating on image
             NormalizationFilter normalization = new NormalizationFilter();
-            processedImage.ApplyFilter(normalization);
+            image.ApplyFilter(normalization);
 
             FastGaussianBlurFilter gaussian = new FastGaussianBlurFilter(5f);
-            processedImage.ApplyFilter(gaussian);
+            image.ApplyFilter(gaussian);
 
-            Histogram histogram = new Histogram(processedImage);
+            Histogram histogram = new Histogram(image);
             byte filteredThreshold = histogram.GetThresholdLevel();
 
             ThresholdFilter threshold = new ThresholdFilter(filteredThreshold);
-            processedImage.ApplyFilter(threshold);
+            image.ApplyFilter(threshold);
 
             // operating on bit matrix for faster calculations
-            BitMatrix matrix = new BitMatrix(processedImage);
+            BitMatrix matrix = new BitMatrix(image);
 
             AutoCropFilter autoCrop = new AutoCropFilter();
             matrix.ApplyFilter(autoCrop);
@@ -43,7 +48,13 @@ namespace Biomet_Project
             return resultingImage;
         }
 
-        public KalikoImage DEBUG_LoadImage()
+        public KalikoImage DEBUG_LoadMarkerScan()
+        {
+            KalikoImage image = new KalikoImage(@"C:\Projects\Biomet-Handscan\markers_color.jpg");
+            return image;
+        }
+
+        public KalikoImage DEBUG_LoadImageScan()
         {
             KalikoImage image = new KalikoImage(@"C:\Projects\Biomet-Handscan\hand_color.jpg");
             return image;
