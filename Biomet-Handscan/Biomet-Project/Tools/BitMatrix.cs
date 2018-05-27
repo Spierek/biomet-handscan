@@ -135,7 +135,7 @@ namespace Kaliko.ImageLibrary.BitFilters
                     if (oldX >= 0 && oldX < oldWidth &&
                         oldY >= 0 && oldY < oldHeight)
                     {
-                        int pos = oldX + oldY * m_Width;
+                        int pos = oldX + oldY * oldWidth;
                         int index = pos % 8;
                         pos >>= 3;
 

@@ -27,8 +27,8 @@ namespace Biomet_Project
             SubtractFilter subFilter = new SubtractFilter(markers);
             matrix.ApplyFilter(subFilter);
 
-            //AutoCropFilter autoCrop = new AutoCropFilter();
-            //matrix.ApplyFilter(autoCrop);
+            AutoCropFilter autoCrop = new AutoCropFilter();
+            matrix.ApplyFilter(autoCrop);
 
             // after performing bit matrix operations, get a new image
             KalikoImage bitImage = matrix.ToImage();
