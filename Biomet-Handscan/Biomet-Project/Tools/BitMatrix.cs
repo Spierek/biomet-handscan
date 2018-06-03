@@ -1,5 +1,6 @@
 ﻿using System;
-using System.IO;
+using System.Collections.Generic;
+using System.Drawing;
 
 namespace Kaliko.ImageLibrary.BitFilters
 {
@@ -145,6 +146,21 @@ namespace Kaliko.ImageLibrary.BitFilters
             }
         }
 
+        public void SetPoints(List<Point> points, bool set)
+        {
+            if (points != null)
+            {
+                for (int i = 0; i < points.Count; ++i)
+                {
+                    Point p = points[i];
+                    if (IsPointCorrect(p.X, p.Y))
+                    {
+                        this[p.X, p.Y] = set;
+                    }
+                }
+            }
+        }
+
         private int GetByteCount()
         {
             int bitCount = m_Width * m_Height;
@@ -160,6 +176,11 @@ namespace Kaliko.ImageLibrary.BitFilters
         public void ApplyFilter(IBitFilter filter)
         {
             filter.Run(this);
+        }
+
+        public bool IsPointCorrect(int x, int y)
+        {
+            return (x >= 0 && x < Width && y >= 0 && y < Height);
         }
     }
 }

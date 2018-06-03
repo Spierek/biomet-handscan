@@ -47,6 +47,7 @@
             this.verifyBox = new System.Windows.Forms.GroupBox();
             this.verifyButton = new System.Windows.Forms.Button();
             this.verifyAddButton = new System.Windows.Forms.Button();
+            this.previewOutlineButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.imageBox)).BeginInit();
             this.scanBox.SuspendLayout();
             this.processBox.SuspendLayout();
@@ -129,11 +130,12 @@
             // 
             // processBox
             // 
+            this.processBox.Controls.Add(this.previewOutlineButton);
             this.processBox.Controls.Add(this.groupBox3);
             this.processBox.Controls.Add(this.groupBox1);
-            this.processBox.Location = new System.Drawing.Point(12, 276);
+            this.processBox.Location = new System.Drawing.Point(12, 261);
             this.processBox.Name = "processBox";
-            this.processBox.Size = new System.Drawing.Size(240, 146);
+            this.processBox.Size = new System.Drawing.Size(240, 178);
             this.processBox.TabIndex = 7;
             this.processBox.TabStop = false;
             this.processBox.Text = "PREVIEW";
@@ -251,6 +253,16 @@
             this.verifyAddButton.UseVisualStyleBackColor = true;
             this.verifyAddButton.Click += new System.EventHandler(this.verifyAddButton_Click);
             // 
+            // previewOutlineButton
+            // 
+            this.previewOutlineButton.Location = new System.Drawing.Point(9, 143);
+            this.previewOutlineButton.Name = "previewOutlineButton";
+            this.previewOutlineButton.Size = new System.Drawing.Size(225, 26);
+            this.previewOutlineButton.TabIndex = 4;
+            this.previewOutlineButton.Text = "Create Outline";
+            this.previewOutlineButton.UseVisualStyleBackColor = true;
+            this.previewOutlineButton.Click += new System.EventHandler(this.previewOutlineButton_Click);
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -292,6 +304,7 @@
         private System.Windows.Forms.Button previewImageProcessedButton;
         private System.Windows.Forms.Button button6;
         private System.Windows.Forms.Button previewImageScanButton;
+        private System.Windows.Forms.Button previewOutlineButton;
     }
 }
 

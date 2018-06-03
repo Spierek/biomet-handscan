@@ -1,5 +1,7 @@
 ﻿using Kaliko.ImageLibrary;
+using Kaliko.ImageLibrary.BitFilters;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using TwainDotNet;
@@ -10,6 +12,7 @@ namespace Biomet_Project
     {
         private ScanManager m_ScanManager;
         private ImageProcessor m_ImageProcessor;
+        private PathDetector m_PathDetector;
 
         // scanner input
         private Bitmap m_ScannedImage;
@@ -28,6 +31,7 @@ namespace Biomet_Project
 
             InitializeScanning();
             InitializeProcessor();
+            InitializeDetector();
 
             InitializeInput();
         }
@@ -44,6 +48,11 @@ namespace Biomet_Project
             m_ImageProcessor = new ImageProcessor();
         }
 
+        private void InitializeDetector()
+        {
+            m_PathDetector = new PathDetector();
+        }
+
         private void InitializeInput()
         {
             PreviewKeyDown += HandleEscPressed;
@@ -57,6 +66,7 @@ namespace Biomet_Project
             previewMarkersProcessedButton.Enabled = false;
             previewImageScanButton.Enabled = false;
             previewImageProcessedButton.Enabled = false;
+            previewOutlineButton.Enabled = false;
 
             verifyAddButton.Enabled = false;
             verifyButton.Enabled = false;
@@ -151,6 +161,7 @@ namespace Biomet_Project
 
                 previewImageScanButton.Enabled = true;
                 previewImageProcessedButton.Enabled = true;
+                previewOutlineButton.Enabled = true;
             }
         }
 
@@ -202,6 +213,18 @@ namespace Biomet_Project
         private void previewFinalButton_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void previewOutlineButton_Click(object sender, EventArgs e)
+        {
+            BitMatrix matrix = new BitMatrix(m_ProcessedImage);
+            List<Point> path = m_PathDetector.FindLongestPath(matrix);
+
+            // preview
+            BitMatrix pathMatrix = new BitMatrix(matrix.Width, matrix.Height);
+            pathMatrix.SetPoints(path, true);
+            KalikoImage pathImage = pathMatrix.ToImage();
+            DisplayBitmap(pathImage.GetAsBitmap());
         }
     }
 }
