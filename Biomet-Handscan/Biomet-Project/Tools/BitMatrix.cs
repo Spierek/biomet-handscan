@@ -38,6 +38,14 @@ namespace Kaliko.ImageLibrary.BitFilters
             }
         }
 
+        public BitMatrix(BitMatrix bm) : this(bm.Width, bm.Height)
+        {
+            for (int i = 0; i < bm.m_Data.Length; ++i)
+            {
+                m_Data[i] = bm.m_Data[i];
+            }
+        }
+
         public KalikoImage ToImage()
         {
             KalikoImage image = new KalikoImage(Width, Height);
@@ -143,6 +151,14 @@ namespace Kaliko.ImageLibrary.BitFilters
                         this[i, j] = ((oldData[pos] & (1 << index)) != 0);
                     }
                 }
+            }
+        }
+
+        public void SetPoint(Point point, bool set)
+        {
+            if (point != null && IsPointCorrect(point.X, point.Y))
+            {
+                this[point.X, point.Y] = set;
             }
         }
 

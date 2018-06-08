@@ -36,6 +36,7 @@
             this.scanSelectButton = new System.Windows.Forms.Button();
             this.scanSourceLabel = new System.Windows.Forms.Label();
             this.processBox = new System.Windows.Forms.GroupBox();
+            this.previewOutlineButton = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.previewImageProcessedButton = new System.Windows.Forms.Button();
             this.button6 = new System.Windows.Forms.Button();
@@ -47,7 +48,6 @@
             this.verifyBox = new System.Windows.Forms.GroupBox();
             this.verifyButton = new System.Windows.Forms.Button();
             this.verifyAddButton = new System.Windows.Forms.Button();
-            this.previewOutlineButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.imageBox)).BeginInit();
             this.scanBox.SuspendLayout();
             this.processBox.SuspendLayout();
@@ -139,6 +139,16 @@
             this.processBox.TabIndex = 7;
             this.processBox.TabStop = false;
             this.processBox.Text = "PREVIEW";
+            // 
+            // previewOutlineButton
+            // 
+            this.previewOutlineButton.Location = new System.Drawing.Point(9, 143);
+            this.previewOutlineButton.Name = "previewOutlineButton";
+            this.previewOutlineButton.Size = new System.Drawing.Size(225, 26);
+            this.previewOutlineButton.TabIndex = 4;
+            this.previewOutlineButton.Text = "Create Outline";
+            this.previewOutlineButton.UseVisualStyleBackColor = true;
+            this.previewOutlineButton.Click += new System.EventHandler(this.previewOutlineButton_Click);
             // 
             // groupBox3
             // 
@@ -252,16 +262,6 @@
             this.verifyAddButton.Text = "Add To Database";
             this.verifyAddButton.UseVisualStyleBackColor = true;
             this.verifyAddButton.Click += new System.EventHandler(this.verifyAddButton_Click);
-            // 
-            // previewOutlineButton
-            // 
-            this.previewOutlineButton.Location = new System.Drawing.Point(9, 143);
-            this.previewOutlineButton.Name = "previewOutlineButton";
-            this.previewOutlineButton.Size = new System.Drawing.Size(225, 26);
-            this.previewOutlineButton.TabIndex = 4;
-            this.previewOutlineButton.Text = "Create Outline";
-            this.previewOutlineButton.UseVisualStyleBackColor = true;
-            this.previewOutlineButton.Click += new System.EventHandler(this.previewOutlineButton_Click);
             // 
             // MainWindow
             // 

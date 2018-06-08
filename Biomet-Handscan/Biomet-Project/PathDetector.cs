@@ -163,5 +163,54 @@ namespace Biomet_Project
 
         //    return false;
         //}
+
+        public Point FindCentroid(BitMatrix bm, List<Point> path)
+        {
+            List<Point> thisLayer = new List<Point>(path);
+            List<Point> nextLayer;
+
+            Point lastPoint = new Point();
+            BitMatrix fbm = new BitMatrix(bm);
+
+            // remove outline
+            for (int i = 0; i < thisLayer.Count; ++i)
+            {
+                fbm[thisLayer[i].X, thisLayer[i].Y] = false;
+            }
+
+            // iterate over the outline in order to narrow it down to the center point
+            while (thisLayer.Count > 0)
+            {
+                nextLayer = new List<Point>();
+                lastPoint = thisLayer[0];
+                for (int i = 0; i < thisLayer.Count; ++i)
+                {
+                    if (thisLayer[i].Y > 0 && fbm[thisLayer[i].X, thisLayer[i].Y - 1])
+                    {
+                        fbm[thisLayer[i].X, thisLayer[i].Y - 1] = false;
+                        nextLayer.Add(new Point(thisLayer[i].X, thisLayer[i].Y - 1));
+                    }
+                    if (thisLayer[i].X < bm.Width - 1 && fbm[thisLayer[i].X + 1, thisLayer[i].Y])
+                    {
+                        fbm[thisLayer[i].X + 1, thisLayer[i].Y] = false;
+                        nextLayer.Add(new Point(thisLayer[i].X + 1, thisLayer[i].Y));
+                    }
+                    if (thisLayer[i].Y < bm.Height - 1 && fbm[thisLayer[i].X, thisLayer[i].Y + 1])
+                    {
+                        fbm[thisLayer[i].X, thisLayer[i].Y + 1] = false;
+                        nextLayer.Add(new Point(thisLayer[i].X, thisLayer[i].Y + 1));
+                    }
+                    if (thisLayer[i].X > 0 && fbm[thisLayer[i].X - 1, thisLayer[i].Y])
+                    {
+                        fbm[thisLayer[i].X - 1, thisLayer[i].Y] = false;
+                        nextLayer.Add(new Point(thisLayer[i].X - 1, thisLayer[i].Y));
+                    }
+                }
+
+                thisLayer = nextLayer;
+            }
+
+            return lastPoint;
+        }
     }
 }

@@ -220,10 +220,16 @@ namespace Biomet_Project
             BitMatrix matrix = new BitMatrix(m_ProcessedImage);
             List<Point> path = m_PathDetector.FindLongestPath(matrix);
 
-            // preview
+            // centroid
+            Point centroid = m_PathDetector.FindCentroid(matrix, path);
+
+            // path preview
             BitMatrix pathMatrix = new BitMatrix(matrix.Width, matrix.Height);
             pathMatrix.SetPoints(path, true);
+
             KalikoImage pathImage = pathMatrix.ToImage();
+            pathImage.DrawMarker(centroid, Color.Magenta, 4);
+
             DisplayBitmap(pathImage.GetAsBitmap());
         }
     }
