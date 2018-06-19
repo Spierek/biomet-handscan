@@ -1,5 +1,6 @@
 ﻿using Kaliko.ImageLibrary;
 using Kaliko.ImageLibrary.BitFilters;
+using LSTools;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -220,15 +221,30 @@ namespace Biomet_Project
             BitMatrix matrix = new BitMatrix(m_ProcessedImage);
             List<Point> path = m_PathDetector.FindLongestPath(matrix);
 
-            // centroid
+            // find centroid
             Point centroid = m_PathDetector.FindCentroid(matrix, path);
+
+            // find min/max points
+            List<APair<int, double>> minimums, maximums;
+            m_PathDetector.FindFingerPoints(path, centroid, out maximums, out minimums);
 
             // path preview
             BitMatrix pathMatrix = new BitMatrix(matrix.Width, matrix.Height);
             pathMatrix.SetPoints(path, true);
 
+            // centroid preview
             KalikoImage pathImage = pathMatrix.ToImage();
             pathImage.DrawMarker(centroid, Color.Magenta, 4);
+
+            // finger preview
+            for (int i = 0; i < 5; ++i)
+            {
+                pathImage.DrawMarker(path[maximums[i].First], Color.Green, 4);
+            }
+            for (int i = 0; i < 4; ++i)
+            {
+                pathImage.DrawMarker(path[minimums[i].First], Color.Yellow, 4);
+            }
 
             DisplayBitmap(pathImage.GetAsBitmap());
         }

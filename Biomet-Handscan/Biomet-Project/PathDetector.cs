@@ -1,6 +1,9 @@
 ﻿using Kaliko.ImageLibrary.BitFilters;
+using LSTools;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 namespace Biomet_Project
 {
@@ -211,6 +214,115 @@ namespace Biomet_Project
             }
 
             return lastPoint;
+        }
+
+        // returns 5 local max points (1 for each fingertip) and 4 local min points (spaces between fingers)
+        public void FindFingerPoints(List<Point> path, Point centroid, out List<APair<int, double>> maximums, out List<APair<int, double>> minimums)
+        {
+            // find distances to centroid for each path point
+            List<double> distances = new List<double>();
+            for (int i = 0; i < path.Count; ++i)
+            {
+                Point p = path[i];
+                if (p != null)
+                {
+                    double dist = Distance(p, centroid);
+                    distances.Add(dist);
+                }
+            }
+
+            List<double> blurredDistances = ListBlur(distances);
+
+            maximums = FindMaximums(blurredDistances);
+            minimums = FindMinimums(blurredDistances, path, maximums);
+        }
+
+        private void DetectFeatures()
+        {
+            // #TODO LS
+        }
+
+
+        // √((x2−x1)^2+(y2−y1)^2)
+        private double Distance(Point a, Point b)
+        {
+            double x = Math.Pow((b.X - a.X), 2);
+            double y = Math.Pow((b.Y - a.Y), 2);
+            return Math.Sqrt(x + y);
+        }
+
+        // blur contents to get rid of sudden max/min spikes
+        private List<double> ListBlur(List<double> data)
+        {
+            List<double> blurred = new List<double>(data.Count);
+            blurred.AddRange(data);
+            for (int i = 2; i < data.Count - 2; ++i)
+            {
+                blurred[i] = data[i] * 4 + (data[i + 1] + data[i - 1]) * 3 + data[i + 2] + data[i - 2];
+                blurred[i] /= 11.0;
+            }
+
+            return blurred;
+        }
+
+        private List<APair<int, double>> FindMaximums(List<double> distances)
+        {
+            List<APair<int, double>> maximums = new List<APair<int, double>>();
+            // find maximums (starting from a small offset to avoid rogue results)
+            for (int i = (int)(distances.Count * 0.05f); i < distances.Count - 1; ++i)
+            {
+                // check if higher than next neighbors
+                if (distances[i] >= distances[i - 1] && distances[i] >= distances[i + 1])
+                {
+                    // if within 32 pixels from last found maximum and the value is higher, replace
+                    if (maximums.Count > 0 && Math.Abs(maximums[maximums.Count - 1].First - i) < 32)
+                    {
+                        APair<int, double> lastMax = maximums[maximums.Count - 1];
+                        if (distances[i] > lastMax.Second)
+                        {
+                            maximums.Remove(lastMax);
+                            maximums.Add(new APair<int, double>(i, distances[i]));
+                        }
+                    }
+                    else
+                    {
+                        maximums.Add(new APair<int, double>(i, distances[i]));
+                    }
+                }
+            }
+
+            // narrow down to 5 highest results
+            maximums = maximums.OrderByDescending(o => o.Second).ToList();
+            maximums.RemoveRange(5, maximums.Count - 5);
+
+            // re-sort by occurence
+            maximums = maximums.OrderBy(o => o.First).ToList();
+
+            return maximums;
+        }
+
+        private List<APair<int, double>> FindMinimums(List<double> distances, List<Point> path, List<APair<int, double>> maximums)
+        {
+            List<APair<int, double>> minimums = new List<APair<int, double>>();
+            for (int i = 0; i < 4; ++i)
+            {
+                int minJ = maximums[i].First;
+                double minV = maximums[i].Second;
+
+                // search between maximums
+                for (int j = maximums[i].First; j < maximums[i + 1].First; ++j)
+                {
+                    if (distances[j] < minV)
+                    {
+                        minV = distances[j];
+                        minJ = j;
+                    }
+                }
+
+                minimums.Add(new APair<int, double>(minJ, minV));
+            }
+
+            return minimums;
         }
     }
 }
