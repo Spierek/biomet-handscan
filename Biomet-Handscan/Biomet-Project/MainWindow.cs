@@ -239,11 +239,13 @@ namespace Biomet_Project
             // finger preview
             for (int i = 0; i < 5; ++i)
             {
-                pathImage.DrawMarker(path[maximums[i].First], Color.Green, 4);
+                Point p = path[maximums[i].First];
+                pathImage.DrawMarker(p, Color.Green, 4);
             }
             for (int i = 0; i < 4; ++i)
             {
-                pathImage.DrawMarker(path[minimums[i].First], Color.Yellow, 4);
+                Point p = path[minimums[i].First];
+                pathImage.DrawMarker(p, Color.Yellow, 4);
             }
 
             DisplayBitmap(pathImage.GetAsBitmap());

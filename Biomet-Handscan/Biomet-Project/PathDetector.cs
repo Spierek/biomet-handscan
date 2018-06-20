@@ -89,15 +89,10 @@ namespace Biomet_Project
                             // check if examined point has not been merged with any other path yet
                             if (!pathMerged[np])
                             {
+                                paths[np].Reverse();
                                 paths[np].InsertRange(0, paths[op]);
 
-                                //for (int i = paths[op].Count - 1; i >= 0; i--)
-                                //{
-                                //    paths[np].Add(paths[op][i]);
-                                //}
-
                                 paths[op].Clear();
-                                //toRemove.Add(np);
                                 pathMerged[np] = true;
                             }
 
@@ -234,7 +229,7 @@ namespace Biomet_Project
             List<double> blurredDistances = ListBlur(distances);
 
             maximums = FindMaximums(blurredDistances);
-            minimums = FindMinimums(blurredDistances, path, maximums);
+            minimums = FindMinimums(blurredDistances, maximums);
         }
 
         private void DetectFeatures()
@@ -301,7 +296,7 @@ namespace Biomet_Project
             return maximums;
         }
 
-        private List<APair<int, double>> FindMinimums(List<double> distances, List<Point> path, List<APair<int, double>> maximums)
+        private List<APair<int, double>> FindMinimums(List<double> distances, List<APair<int, double>> maximums)
         {
             List<APair<int, double>> minimums = new List<APair<int, double>>();
             for (int i = 0; i < 4; ++i)
