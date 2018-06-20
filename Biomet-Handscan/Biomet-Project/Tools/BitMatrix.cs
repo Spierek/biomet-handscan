@@ -177,6 +177,53 @@ namespace Kaliko.ImageLibrary.BitFilters
             }
         }
 
+        // iteratively fills an area around the specified point until reaching any edges
+        public int FillArea(Point p)
+        {
+            List<Point> thisLayer = new List<Point>() { p };
+            List<Point> nextLayer = new List<Point>();
+
+            int ret = this[p.X, p.Y] ? 0 : 1;
+            this[p.X, p.Y] = true;
+
+            while (thisLayer.Count > 0)
+            {
+                nextLayer.Clear();
+                for (int i = 0; i < thisLayer.Count; ++i)
+                {
+                    if (thisLayer[i].X > 0 && !this[thisLayer[i].X - 1, thisLayer[i].Y])
+                    {
+                        this[thisLayer[i].X - 1, thisLayer[i].Y] = true;
+                        ++ret;
+                        nextLayer.Add(new Point(thisLayer[i].X - 1, thisLayer[i].Y));
+                    }
+                    if (thisLayer[i].Y < Height - 1 && !this[thisLayer[i].X, thisLayer[i].Y + 1])
+                    {
+                        this[thisLayer[i].X, thisLayer[i].Y + 1] = true;
+                        ++ret;
+                        nextLayer.Add(new Point(thisLayer[i].X, thisLayer[i].Y + 1));
+                    }
+                    if (thisLayer[i].X < Width - 1 && !this[thisLayer[i].X + 1, thisLayer[i].Y])
+                    {
+                        this[thisLayer[i].X + 1, thisLayer[i].Y] = true;
+                        ++ret;
+                        nextLayer.Add(new Point(thisLayer[i].X + 1, thisLayer[i].Y));
+                    }
+                    if (thisLayer[i].Y > 0 && !this[thisLayer[i].X, thisLayer[i].Y - 1])
+                    {
+                        this[thisLayer[i].X, thisLayer[i].Y - 1] = true;
+                        ++ret;
+                        nextLayer.Add(new Point(thisLayer[i].X, thisLayer[i].Y - 1));
+                    }
+                }
+
+                thisLayer = new List<Point>();
+                thisLayer.InsertRange(0, nextLayer);
+            }
+
+            return ret;
+        }
+
         private int GetByteCount()
         {
             int bitCount = m_Width * m_Height;

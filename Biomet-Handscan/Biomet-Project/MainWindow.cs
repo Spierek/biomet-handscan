@@ -13,7 +13,7 @@ namespace Biomet_Project
     {
         private ScanManager m_ScanManager;
         private ImageProcessor m_ImageProcessor;
-        private PathDetector m_PathDetector;
+        private HandAnalyzer m_HandAnalyzer;
 
         // scanner input
         private Bitmap m_ScannedImage;
@@ -51,7 +51,7 @@ namespace Biomet_Project
 
         private void InitializeDetector()
         {
-            m_PathDetector = new PathDetector();
+            m_HandAnalyzer = new HandAnalyzer();
         }
 
         private void InitializeInput()
@@ -219,14 +219,17 @@ namespace Biomet_Project
         private void previewOutlineButton_Click(object sender, EventArgs e)
         {
             BitMatrix matrix = new BitMatrix(m_ProcessedImage);
-            List<Point> path = m_PathDetector.FindLongestPath(matrix);
+            List<Point> path = m_HandAnalyzer.FindLongestPath(matrix);
 
             // find centroid
-            Point centroid = m_PathDetector.FindCentroid(matrix, path);
+            Point centroid = m_HandAnalyzer.FindCentroid(matrix, path);
 
             // find min/max points
             List<APair<int, double>> minimums, maximums;
-            m_PathDetector.FindFingerPoints(path, centroid, out maximums, out minimums);
+            m_HandAnalyzer.FindFingerPoints(path, centroid, out maximums, out minimums);
+
+            // find finger lengths and surface areas
+            List<double> distances = m_HandAnalyzer.FindFingerFeatures(path, maximums, minimums);
 
             // path preview
             BitMatrix pathMatrix = new BitMatrix(matrix.Width, matrix.Height);
@@ -236,7 +239,7 @@ namespace Biomet_Project
             KalikoImage pathImage = pathMatrix.ToImage();
             pathImage.DrawMarker(centroid, Color.Magenta, 4);
 
-            // finger preview
+            // finger points preview
             for (int i = 0; i < 5; ++i)
             {
                 Point p = path[maximums[i].First];

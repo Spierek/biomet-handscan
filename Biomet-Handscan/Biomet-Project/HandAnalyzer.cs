@@ -7,9 +7,8 @@ using System.Linq;
 
 namespace Biomet_Project
 {
-    public class PathDetector
+    public class HandAnalyzer
     {
-        // multiple path ver., breaks during path merging
         public List<Point> FindLongestPath(BitMatrix matrix)
         {
             List<List<Point>> paths = new List<List<Point>>();
@@ -232,11 +231,70 @@ namespace Biomet_Project
             minimums = FindMinimums(blurredDistances, maximums);
         }
 
-        private void DetectFeatures()
+        // calculates distances between max/min points and surface areas for each finger
+        public List<double> FindFingerFeatures(List<Point> path, List<APair<int, double>> maximums, List<APair<int, double>> minimums)
         {
-            // #TODO LS
-        }
+            // get finger/hole points
+            List<Point> fingers = new List<Point>();
+            for (int i = 0; i < maximums.Count; ++i)
+            {
+                fingers.Add(path[maximums[i].First]);
+            }
+            List<Point> holes = new List<Point>();
+            for (int i = 0; i < minimums.Count; ++i)
+            {
+                holes.Add(path[minimums[i].First]);
+            }
 
+            List<double> features = new List<double>
+            {
+                // first add left side distances
+                Distance(fingers[0], holes[0]),
+                Distance(fingers[1], holes[1]),
+                Distance(fingers[2], holes[2]),
+                Distance(fingers[3], holes[3]),
+
+                // then add right side distances
+                Distance(fingers[1], holes[0]),
+                Distance(fingers[2], holes[1]),
+                Distance(fingers[3], holes[2]),
+                Distance(fingers[4], holes[3])
+            };
+
+            // now find points before and after first hole to calculate surface areas
+            int preI = maximums[0].First * 2 - minimums[0].First;
+            int postI;
+
+            Point preHole = path[preI];
+            Point postHole;
+
+            // find point before first hole
+            while (Distance(preHole, fingers[0]) < Distance(fingers[0], holes[0]))
+            {
+                preHole = path[--preI];
+            }
+            while (Distance(preHole, fingers[0]) > Distance(fingers[0], holes[0]))
+            {
+                preHole = path[++preI];
+            }
+
+            // find point after last hole
+            postI = maximums[4].First * 2 - minimums[3].First;
+            postHole = path[postI];
+
+            while (Distance(postHole, fingers[4]) < Distance(fingers[4], holes[3]))
+            {
+                postHole = path[++postI];
+            }
+            while (Distance(postHole, fingers[4]) > Distance(fingers[4], holes[3]))
+            {
+                postHole = path[--postI];
+            }
+
+
+
+            return features;
+        }
 
         // √((x2−x1)^2+(y2−y1)^2)
         private double Distance(Point a, Point b)
