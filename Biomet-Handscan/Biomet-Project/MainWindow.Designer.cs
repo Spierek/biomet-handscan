@@ -31,8 +31,11 @@
             this.imageBox = new System.Windows.Forms.PictureBox();
             this.scanImageButton = new System.Windows.Forms.Button();
             this.scanBox = new System.Windows.Forms.GroupBox();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.debugB1Button = new System.Windows.Forms.Button();
+            this.debugA2Button = new System.Windows.Forms.Button();
+            this.debugA1Button = new System.Windows.Forms.Button();
             this.scanMarkersButton = new System.Windows.Forms.Button();
-            this.debugScanButton = new System.Windows.Forms.Button();
             this.scanSelectButton = new System.Windows.Forms.Button();
             this.scanSourceLabel = new System.Windows.Forms.Label();
             this.processBox = new System.Windows.Forms.GroupBox();
@@ -50,6 +53,7 @@
             this.verifyAddButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.imageBox)).BeginInit();
             this.scanBox.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             this.processBox.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -77,18 +81,60 @@
             // 
             // scanBox
             // 
+            this.scanBox.Controls.Add(this.groupBox2);
             this.scanBox.Controls.Add(this.scanMarkersButton);
-            this.scanBox.Controls.Add(this.debugScanButton);
             this.scanBox.Controls.Add(this.scanSelectButton);
             this.scanBox.Controls.Add(this.scanSourceLabel);
             this.scanBox.Controls.Add(this.scanImageButton);
             this.scanBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.scanBox.Location = new System.Drawing.Point(12, 12);
             this.scanBox.Name = "scanBox";
-            this.scanBox.Size = new System.Drawing.Size(240, 226);
+            this.scanBox.Size = new System.Drawing.Size(240, 256);
             this.scanBox.TabIndex = 6;
             this.scanBox.TabStop = false;
             this.scanBox.Text = "SCAN";
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.debugB1Button);
+            this.groupBox2.Controls.Add(this.debugA2Button);
+            this.groupBox2.Controls.Add(this.debugA1Button);
+            this.groupBox2.Location = new System.Drawing.Point(6, 191);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(228, 57);
+            this.groupBox2.TabIndex = 9;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "DEBUG";
+            // 
+            // debugB1Button
+            // 
+            this.debugB1Button.Location = new System.Drawing.Point(158, 21);
+            this.debugB1Button.Name = "debugB1Button";
+            this.debugB1Button.Size = new System.Drawing.Size(64, 26);
+            this.debugB1Button.TabIndex = 7;
+            this.debugB1Button.Text = "B1";
+            this.debugB1Button.UseVisualStyleBackColor = true;
+            this.debugB1Button.Click += new System.EventHandler(this.debugB1Button_Click);
+            // 
+            // debugA2Button
+            // 
+            this.debugA2Button.Location = new System.Drawing.Point(82, 21);
+            this.debugA2Button.Name = "debugA2Button";
+            this.debugA2Button.Size = new System.Drawing.Size(64, 26);
+            this.debugA2Button.TabIndex = 6;
+            this.debugA2Button.Text = "A2";
+            this.debugA2Button.UseVisualStyleBackColor = true;
+            this.debugA2Button.Click += new System.EventHandler(this.debugA2Button_Click);
+            // 
+            // debugA1Button
+            // 
+            this.debugA1Button.Location = new System.Drawing.Point(6, 21);
+            this.debugA1Button.Name = "debugA1Button";
+            this.debugA1Button.Size = new System.Drawing.Size(64, 26);
+            this.debugA1Button.TabIndex = 5;
+            this.debugA1Button.Text = "A1";
+            this.debugA1Button.UseVisualStyleBackColor = true;
+            this.debugA1Button.Click += new System.EventHandler(this.debugA1Button_Click);
             // 
             // scanMarkersButton
             // 
@@ -99,16 +145,6 @@
             this.scanMarkersButton.Text = "Scan Markers";
             this.scanMarkersButton.UseVisualStyleBackColor = true;
             this.scanMarkersButton.Click += new System.EventHandler(this.markerScanButton_Click);
-            // 
-            // debugScanButton
-            // 
-            this.debugScanButton.Location = new System.Drawing.Point(6, 191);
-            this.debugScanButton.Name = "debugScanButton";
-            this.debugScanButton.Size = new System.Drawing.Size(228, 26);
-            this.debugScanButton.TabIndex = 5;
-            this.debugScanButton.Text = "DEBUG: Use preloaded images";
-            this.debugScanButton.UseVisualStyleBackColor = true;
-            this.debugScanButton.Click += new System.EventHandler(this.debugScanButton_Click);
             // 
             // scanSelectButton
             // 
@@ -133,7 +169,7 @@
             this.processBox.Controls.Add(this.previewOutlineButton);
             this.processBox.Controls.Add(this.groupBox3);
             this.processBox.Controls.Add(this.groupBox1);
-            this.processBox.Location = new System.Drawing.Point(12, 261);
+            this.processBox.Location = new System.Drawing.Point(12, 274);
             this.processBox.Name = "processBox";
             this.processBox.Size = new System.Drawing.Size(240, 178);
             this.processBox.TabIndex = 7;
@@ -259,7 +295,7 @@
             this.verifyAddButton.Name = "verifyAddButton";
             this.verifyAddButton.Size = new System.Drawing.Size(228, 26);
             this.verifyAddButton.TabIndex = 2;
-            this.verifyAddButton.Text = "Add To Database";
+            this.verifyAddButton.Text = "Set As Owner";
             this.verifyAddButton.UseVisualStyleBackColor = true;
             this.verifyAddButton.Click += new System.EventHandler(this.verifyAddButton_Click);
             // 
@@ -276,6 +312,7 @@
             this.Text = "Form1";
             ((System.ComponentModel.ISupportInitialize)(this.imageBox)).EndInit();
             this.scanBox.ResumeLayout(false);
+            this.groupBox2.ResumeLayout(false);
             this.processBox.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
@@ -295,7 +332,7 @@
         private System.Windows.Forms.GroupBox verifyBox;
         private System.Windows.Forms.Button verifyAddButton;
         private System.Windows.Forms.Button verifyButton;
-        private System.Windows.Forms.Button debugScanButton;
+        private System.Windows.Forms.Button debugA1Button;
         private System.Windows.Forms.Button scanMarkersButton;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Button button1;
@@ -305,6 +342,9 @@
         private System.Windows.Forms.Button button6;
         private System.Windows.Forms.Button previewImageScanButton;
         private System.Windows.Forms.Button previewOutlineButton;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.Button debugB1Button;
+        private System.Windows.Forms.Button debugA2Button;
     }
 }
 

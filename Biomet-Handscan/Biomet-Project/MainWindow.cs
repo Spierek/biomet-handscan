@@ -26,6 +26,11 @@ namespace Biomet_Project
         // final composite (image - markers)
         private KalikoImage m_FinalComposite;
 
+        private const string MARKERS_EMPTY_PATH = @"C:\Projects\Biomet-Handscan\markers_empty.jpg";
+        private const string A1_PATH = @"C:\Projects\Biomet-Handscan\handA1_color.jpg";
+        private const string A2_PATH = @"C:\Projects\Biomet-Handscan\handA2_color.jpg";
+        private const string B1_PATH = @"C:\Projects\Biomet-Handscan\handB1_color.jpg";
+
         public MainWindow()
         {
             InitializeComponent();
@@ -174,21 +179,6 @@ namespace Biomet_Project
             }
         }
 
-        private void debugScanButton_Click(object sender, EventArgs e)
-        {
-            KalikoImage markers = new KalikoImage(@"C:\Projects\Biomet-Handscan\markers_empty.jpg");
-            if (markers != null)
-            {
-                HandleMarkerScanFinished(markers.GetAsBitmap(), false);
-            }
-
-            KalikoImage image = new KalikoImage(@"C:\Projects\Biomet-Handscan\handA2_color.jpg");
-            if (image != null)
-            {
-                HandleImageScanFinished(image.GetAsBitmap(), true);
-            }
-        }
-
         private void previewMarkersScanButton_Click(object sender, EventArgs e)
         {
             DisplayBitmap(m_ScannedMarkers);
@@ -260,6 +250,37 @@ namespace Biomet_Project
             }
 
             DisplayBitmap(pathImage.GetAsBitmap());
+        }
+
+        // DEBUG
+        private void debugA1Button_Click(object sender, EventArgs e)
+        {
+            LoadDebug(A1_PATH);
+        }
+
+        private void debugA2Button_Click(object sender, EventArgs e)
+        {
+            LoadDebug(A2_PATH);
+        }
+
+        private void debugB1Button_Click(object sender, EventArgs e)
+        {
+            LoadDebug(B1_PATH);
+        }
+
+        private void LoadDebug(string path)
+        {
+            KalikoImage markers = new KalikoImage(MARKERS_EMPTY_PATH);
+            if (markers != null)
+            {
+                HandleMarkerScanFinished(markers.GetAsBitmap(), false);
+            }
+
+            KalikoImage image = new KalikoImage(path);
+            if (image != null)
+            {
+                HandleImageScanFinished(image.GetAsBitmap(), true);
+            }
         }
     }
 }
