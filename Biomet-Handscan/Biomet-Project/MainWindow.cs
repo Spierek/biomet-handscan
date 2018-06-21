@@ -25,7 +25,6 @@ namespace Biomet_Project
         private KalikoImage m_ProcessedMarkers;
 
         // feature images
-        private KalikoImage m_FeaturesOutline;
         private KalikoImage m_FeaturesPoints;
 
         // verification data
@@ -74,8 +73,8 @@ namespace Biomet_Project
             previewMarkersProcessedButton.Enabled = false;
             previewImageScanButton.Enabled = false;
             previewImageProcessedButton.Enabled = false;
-            previewOutlineButton.Enabled = false;
-            previewPointsButton.Enabled = false;
+            analyzeGenerateButton.Enabled = false;
+            analyzePreviewButton.Enabled = false;
 
             verifyAddButton.Enabled = false;
             verifyButton.Enabled = false;
@@ -117,6 +116,15 @@ namespace Biomet_Project
             }
         }
 
+        private void loadMarkersButton_Click(object sender, EventArgs e)
+        {
+            KalikoImage markers = new KalikoImage(MARKERS_EMPTY_PATH);
+            if (markers != null)
+            {
+                HandleMarkerScanFinished(markers.GetAsBitmap(), false);
+            }
+        }
+
         private void imageScanButton_Click(object sender, EventArgs e)
         {
             if (m_ScanManager.IsInitialized)
@@ -151,6 +159,7 @@ namespace Biomet_Project
 
                 previewMarkersScanButton.Enabled = true;
                 previewMarkersProcessedButton.Enabled = true;
+                scanImageButton.Enabled = true;
             }
         }
 
@@ -171,7 +180,6 @@ namespace Biomet_Project
 
                 m_ScannedImage = bitmap;
                 m_ProcessedImage = m_ImageProcessor.GetProcessedImage(m_ScannedImage, m_ProcessedMarkers);
-                m_VerificationScanFeatures = PrepareFeatures();
                 if (preview)
                 {
                     DisplayBitmap(m_ScannedImage);
@@ -179,15 +187,11 @@ namespace Biomet_Project
 
                 previewImageScanButton.Enabled = true;
                 previewImageProcessedButton.Enabled = true;
-                previewOutlineButton.Enabled = true;
-                previewPointsButton.Enabled = true;
-                verifyAddButton.Enabled = true;
 
-                if (m_Verifier.HasIdentity)
-                {
-                    verifyButton.Enabled = true;
-                    verifyButton.BackColor = m_VerifyColorBase;
-                }
+                analyzeGenerateButton.Enabled = true;
+                analyzePreviewButton.Enabled = false;
+                verifyAddButton.Enabled = false;
+                verifyButton.Enabled = false;
             }
         }
 
@@ -211,12 +215,21 @@ namespace Biomet_Project
             DisplayBitmap(m_ProcessedImage.GetAsBitmap());
         }
 
-        private void previewOutlineButton_Click(object sender, EventArgs e)
+        private void analyzeGenerateButton_Click(object sender, EventArgs e)
         {
-            DisplayBitmap(m_FeaturesOutline.GetAsBitmap());
+            m_VerificationScanFeatures = PrepareFeatures();
+            DisplayBitmap(m_FeaturesPoints.GetAsBitmap());
+            analyzePreviewButton.Enabled = true;
+            verifyAddButton.Enabled = true;
+
+            if (m_Verifier.HasIdentity)
+            {
+                verifyButton.Enabled = true;
+                verifyButton.BackColor = m_VerifyColorBase;
+            }
         }
 
-        private void previewPointsButton_Click(object sender, EventArgs e)
+        private void analyzePreviewButton_Click(object sender, EventArgs e)
         {
             DisplayBitmap(m_FeaturesPoints.GetAsBitmap());
         }
@@ -252,7 +265,6 @@ namespace Biomet_Project
             // path preview
             BitMatrix pathMatrix = new BitMatrix(matrix.Width, matrix.Height);
             pathMatrix.SetPoints(path, true);
-            m_FeaturesOutline = pathMatrix.ToImage();
 
             // centroid preview
             m_FeaturesPoints = pathMatrix.ToImage();
@@ -291,11 +303,7 @@ namespace Biomet_Project
 
         private void LoadDebug(string path)
         {
-            KalikoImage markers = new KalikoImage(MARKERS_EMPTY_PATH);
-            if (markers != null)
-            {
-                HandleMarkerScanFinished(markers.GetAsBitmap(), false);
-            }
+            loadMarkersButton_Click(null, null);
 
             KalikoImage image = new KalikoImage(path);
             if (image != null)
