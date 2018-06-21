@@ -130,6 +130,10 @@ namespace Biomet_Project
         {
             if (bitmap != null)
             {
+                KalikoImage img = new KalikoImage(bitmap);
+                img.RotateFlip(RotateFlipType.Rotate180FlipNone);
+                bitmap = img.GetAsBitmap();
+
                 m_ScannedMarkers = bitmap;
                 m_ProcessedMarkers = m_ImageProcessor.GetProcessedMarkers(m_ScannedMarkers);
                 if (preview)
@@ -153,6 +157,10 @@ namespace Biomet_Project
         {
             if (bitmap != null)
             {
+                KalikoImage img = new KalikoImage(bitmap);
+                img.RotateFlip(RotateFlipType.Rotate180FlipNone);
+                bitmap = img.GetAsBitmap();
+
                 m_ScannedImage = bitmap;
                 m_ProcessedImage = m_ImageProcessor.GetProcessedImage(m_ScannedImage, m_ProcessedMarkers);
                 if (preview)
@@ -168,13 +176,13 @@ namespace Biomet_Project
 
         private void debugScanButton_Click(object sender, EventArgs e)
         {
-            KalikoImage markers = m_ImageProcessor.DEBUG_LoadMarkerScan();
+            KalikoImage markers = new KalikoImage(@"C:\Projects\Biomet-Handscan\markers_empty.jpg");
             if (markers != null)
             {
                 HandleMarkerScanFinished(markers.GetAsBitmap(), false);
             }
 
-            KalikoImage image = m_ImageProcessor.DEBUG_LoadImageScan();
+            KalikoImage image = new KalikoImage(@"C:\Projects\Biomet-Handscan\handA2_color.jpg");
             if (image != null)
             {
                 HandleImageScanFinished(image.GetAsBitmap(), true);

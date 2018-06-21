@@ -55,17 +55,5 @@ namespace Biomet_Project
             ThresholdFilter threshold = new ThresholdFilter(filteredThreshold);
             image.ApplyFilter(threshold);
         }
-
-        public KalikoImage DEBUG_LoadMarkerScan()
-        {
-            KalikoImage image = new KalikoImage(@"C:\Projects\Biomet-Handscan\markers_color.jpg");
-            return image;
-        }
-
-        public KalikoImage DEBUG_LoadImageScan()
-        {
-            KalikoImage image = new KalikoImage(@"C:\Projects\Biomet-Handscan\hand_color.jpg");
-            return image;
-        }
     }
 }

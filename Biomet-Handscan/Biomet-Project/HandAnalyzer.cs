@@ -282,11 +282,11 @@ namespace Biomet_Project
             postI = maximums[4].First * 2 - minimums[3].First;
             postHole = path[postI];
 
-            while (BitMatrix.Distance(postHole, fingers[4]) < BitMatrix.Distance(fingers[4], holes[3]))
+            while (BitMatrix.Distance(postHole, fingers[4]) < BitMatrix.Distance(fingers[4], holes[3]) && postI < path.Count - 1)
             {
                 postHole = path[++postI];
             }
-            while (BitMatrix.Distance(postHole, fingers[4]) > BitMatrix.Distance(fingers[4], holes[3]))
+            while (BitMatrix.Distance(postHole, fingers[4]) > BitMatrix.Distance(fingers[4], holes[3]) && postI >= 0)
             {
                 postHole = path[--postI];
             }
