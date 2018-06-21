@@ -5,6 +5,11 @@ namespace Kaliko.ImageLibrary
 {
     public static class KalikoImageExt
     {
+        public static bool IsPointCorrect(this KalikoImage ki, int x, int y)
+        {
+            return (x >= 0 && y >= 0 && x < ki.Width - 1 && y < ki.Height - 1);
+        }
+
         public static void SetPixel(this KalikoImage ki, int x, int y, Color col)
         {
             SetPixel(ki, x, y, col.R, col.G, col.B, col.A);
@@ -52,7 +57,12 @@ namespace Kaliko.ImageLibrary
             {
                 for (int i = -radius; i < radius; ++i)
                 {
-                    points.Add(new Point(p.X + i, p.Y + j));
+                    int x = p.X + i;
+                    int y = p.Y + j;
+                    if (ki.IsPointCorrect(x, y))
+                    {
+                        points.Add(new Point(x, y));
+                    }
                 }
             }
 

@@ -25,14 +25,15 @@ namespace Biomet_Project
         private KalikoImage m_ProcessedMarkers;
 
         // feature images
-        private KalikoImage m_FeaturesPoints;
+        private KalikoImage m_FeaturesImage;
 
         // verification data
+        private KalikoImage m_VerificationOwnerImage;
         private List<double> m_VerificationScanFeatures;
 
-        private Color m_VerifyColorBase;
-        private Color m_VerifyColorCorrect = Color.LightGreen;
-        private Color m_VerifyColorIncorrect = Color.Pink;
+        private Color m_ButtonColorBase;
+        private Color m_ButtonColorCorrect = Color.LightGreen;
+        private Color m_ButtonColorIncorrect = Color.Pink;
 
         private const string MARKERS_EMPTY_PATH = @"C:\Projects\Biomet-Handscan\markers_empty.jpg";
         private const string A1_PATH = @"C:\Projects\Biomet-Handscan\handA1_color.jpg";
@@ -60,7 +61,7 @@ namespace Biomet_Project
 
         private void InitializeInput()
         {
-            m_VerifyColorBase = verifyButton.BackColor;
+            m_ButtonColorBase = verifyButton.BackColor;
 
             PreviewKeyDown += HandleEscPressed;
 
@@ -121,7 +122,7 @@ namespace Biomet_Project
             KalikoImage markers = new KalikoImage(MARKERS_EMPTY_PATH);
             if (markers != null)
             {
-                HandleMarkerScanFinished(markers.GetAsBitmap(), false);
+                HandleMarkerScanFinished(markers.GetAsBitmap(), false, true);
             }
         }
 
@@ -139,16 +140,19 @@ namespace Biomet_Project
         {
             m_ScanManager.Twain.TransferImage -= HandleMarkerScanFinished;
             scanMarkersButton.Enabled = true;
-            HandleMarkerScanFinished(e.Image, true);
+            HandleMarkerScanFinished(e.Image, true, false);
         }
 
-        private void HandleMarkerScanFinished(Bitmap bitmap, bool preview)
+        private void HandleMarkerScanFinished(Bitmap bitmap, bool preview, bool rotate)
         {
             if (bitmap != null)
             {
-                KalikoImage img = new KalikoImage(bitmap);
-                img.RotateFlip(RotateFlipType.Rotate180FlipNone);
-                bitmap = img.GetAsBitmap();
+                if (rotate)
+                {
+                    KalikoImage img = new KalikoImage(bitmap);
+                    img.RotateFlip(RotateFlipType.Rotate180FlipNone);
+                    bitmap = img.GetAsBitmap();
+                }
 
                 m_ScannedMarkers = bitmap;
                 m_ProcessedMarkers = m_ImageProcessor.GetProcessedMarkers(m_ScannedMarkers);
@@ -157,9 +161,20 @@ namespace Biomet_Project
                     DisplayBitmap(m_ScannedMarkers);
                 }
 
+                scanImageButton.Enabled = true;
                 previewMarkersScanButton.Enabled = true;
                 previewMarkersProcessedButton.Enabled = true;
-                scanImageButton.Enabled = true;
+
+                previewImageScanButton.Enabled = false;
+                previewImageProcessedButton.Enabled = false;
+
+                analyzeGenerateButton.Enabled = false;
+                analyzeGenerateButton.BackColor = m_ButtonColorBase;
+                analyzePreviewButton.Enabled = false;
+                verifyAddButton.Enabled = false;
+                verifyPreviewOwnerButton.Enabled = false;
+                verifyButton.Enabled = false;
+                verifyButton.BackColor = m_ButtonColorBase;
             }
         }
 
@@ -167,16 +182,19 @@ namespace Biomet_Project
         {
             m_ScanManager.Twain.TransferImage -= HandleImageScanFinished;
             scanImageButton.Enabled = true;
-            HandleImageScanFinished(e.Image, true);
+            HandleImageScanFinished(e.Image, true, false);
         }
 
-        private void HandleImageScanFinished(Bitmap bitmap, bool preview)
+        private void HandleImageScanFinished(Bitmap bitmap, bool preview, bool rotate)
         {
             if (bitmap != null)
             {
-                KalikoImage img = new KalikoImage(bitmap);
-                img.RotateFlip(RotateFlipType.Rotate180FlipNone);
-                bitmap = img.GetAsBitmap();
+                if (rotate)
+                {
+                    KalikoImage img = new KalikoImage(bitmap);
+                    img.RotateFlip(RotateFlipType.Rotate180FlipNone);
+                    bitmap = img.GetAsBitmap();
+                }
 
                 m_ScannedImage = bitmap;
                 m_ProcessedImage = m_ImageProcessor.GetProcessedImage(m_ScannedImage, m_ProcessedMarkers);
@@ -189,9 +207,13 @@ namespace Biomet_Project
                 previewImageProcessedButton.Enabled = true;
 
                 analyzeGenerateButton.Enabled = true;
+                analyzeGenerateButton.BackColor = m_ButtonColorBase;
                 analyzePreviewButton.Enabled = false;
+
                 verifyAddButton.Enabled = false;
+                verifyPreviewOwnerButton.Enabled = false;
                 verifyButton.Enabled = false;
+                verifyButton.BackColor = m_ButtonColorBase;
             }
         }
 
@@ -218,37 +240,55 @@ namespace Biomet_Project
         private void analyzeGenerateButton_Click(object sender, EventArgs e)
         {
             m_VerificationScanFeatures = PrepareFeatures();
-            DisplayBitmap(m_FeaturesPoints.GetAsBitmap());
+            DisplayBitmap(m_FeaturesImage.GetAsBitmap());
             analyzePreviewButton.Enabled = true;
-            verifyAddButton.Enabled = true;
 
-            if (m_Verifier.HasIdentity)
+            if (m_VerificationScanFeatures == null)
             {
-                verifyButton.Enabled = true;
-                verifyButton.BackColor = m_VerifyColorBase;
+                analyzeGenerateButton.BackColor = m_ButtonColorIncorrect;
+            }
+            else
+            {
+                analyzeGenerateButton.BackColor = m_ButtonColorCorrect;
+                verifyAddButton.Enabled = true;
+                if (m_Verifier.HasIdentity)
+                {
+                    verifyPreviewOwnerButton.Enabled = true;
+                    verifyButton.Enabled = true;
+                    verifyButton.BackColor = m_ButtonColorBase;
+                }
             }
         }
 
         private void analyzePreviewButton_Click(object sender, EventArgs e)
         {
-            DisplayBitmap(m_FeaturesPoints.GetAsBitmap());
+            DisplayBitmap(m_FeaturesImage.GetAsBitmap());
         }
 
         private void verifyAddButton_Click(object sender, EventArgs e)
         {
             m_Verifier.SetIdentity(m_VerificationScanFeatures);
+            m_VerificationOwnerImage = m_FeaturesImage;
+            verifyPreviewOwnerButton.Enabled = true;
             verifyButton.Enabled = true;
-            verifyButton.BackColor = m_VerifyColorBase;
+            verifyButton.BackColor = m_ButtonColorBase;
+        }
+
+        private void verifyPreviewOwnerButton_Click(object sender, EventArgs e)
+        {
+            DisplayBitmap(m_VerificationOwnerImage.GetAsBitmap());
         }
 
         private void verifyButton_Click(object sender, EventArgs e)
         {
             bool result = m_Verifier.Verify(m_VerificationScanFeatures);
-            verifyButton.BackColor = result ? m_VerifyColorCorrect : m_VerifyColorIncorrect;
+            verifyButton.BackColor = result ? m_ButtonColorCorrect : m_ButtonColorIncorrect;
         }
 
         private List<double> PrepareFeatures()
         {
+            List<double> features = null;
+
             BitMatrix matrix = new BitMatrix(m_ProcessedImage);
             List<Point> path = m_HandAnalyzer.FindLongestPath(matrix);
 
@@ -257,29 +297,32 @@ namespace Biomet_Project
 
             // find min/max points
             List<APair<int, double>> minimums, maximums;
-            m_HandAnalyzer.FindFingerPoints(path, centroid, out maximums, out minimums);
+            bool result = m_HandAnalyzer.FindFingerPoints(path, centroid, out maximums, out minimums);
 
-            // find finger lengths and surface areas
-            List<double> features = m_HandAnalyzer.FindFingerFeatures(matrix, path, centroid, maximums, minimums);
+            if (result)
+            {
+                // find finger features
+                features = m_HandAnalyzer.FindFingerFeatures(matrix, path, centroid, maximums, minimums);
+            }
 
             // path preview
             BitMatrix pathMatrix = new BitMatrix(matrix.Width, matrix.Height);
             pathMatrix.SetPoints(path, true);
 
             // centroid preview
-            m_FeaturesPoints = pathMatrix.ToImage();
-            m_FeaturesPoints.DrawMarker(centroid, Color.Magenta, 4);
+            m_FeaturesImage = pathMatrix.ToImage();
+            m_FeaturesImage.DrawMarker(centroid, Color.Magenta, 4);
 
             // finger points preview
-            for (int i = 0; i < 5; ++i)
+            for (int i = 0; i < maximums.Count; ++i)
             {
                 Point p = path[maximums[i].First];
-                m_FeaturesPoints.DrawMarker(p, Color.Green, 4);
+                m_FeaturesImage.DrawMarker(p, Color.Green, 4);
             }
-            for (int i = 0; i < 4; ++i)
+            for (int i = 0; i < minimums.Count; ++i)
             {
                 Point p = path[minimums[i].First];
-                m_FeaturesPoints.DrawMarker(p, Color.Yellow, 4);
+                m_FeaturesImage.DrawMarker(p, Color.Yellow, 4);
             }
 
             return features;
@@ -308,7 +351,7 @@ namespace Biomet_Project
             KalikoImage image = new KalikoImage(path);
             if (image != null)
             {
-                HandleImageScanFinished(image.GetAsBitmap(), true);
+                HandleImageScanFinished(image.GetAsBitmap(), true, true);
             }
         }
     }

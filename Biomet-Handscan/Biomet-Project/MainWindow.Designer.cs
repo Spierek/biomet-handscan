@@ -40,10 +40,6 @@
             this.scanSelectButton = new System.Windows.Forms.Button();
             this.scanSourceLabel = new System.Windows.Forms.Label();
             this.processBox = new System.Windows.Forms.GroupBox();
-            this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.analyzePreviewButton = new System.Windows.Forms.Button();
-            this.analyzeGenerateButton = new System.Windows.Forms.Button();
-            this.button3 = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.previewImageProcessedButton = new System.Windows.Forms.Button();
             this.button6 = new System.Windows.Forms.Button();
@@ -52,16 +48,21 @@
             this.previewMarkersProcessedButton = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.previewMarkersScanButton = new System.Windows.Forms.Button();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.analyzePreviewButton = new System.Windows.Forms.Button();
+            this.analyzeGenerateButton = new System.Windows.Forms.Button();
+            this.button3 = new System.Windows.Forms.Button();
             this.verifyBox = new System.Windows.Forms.GroupBox();
             this.verifyButton = new System.Windows.Forms.Button();
             this.verifyAddButton = new System.Windows.Forms.Button();
+            this.verifyPreviewOwnerButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.imageBox)).BeginInit();
             this.scanBox.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.processBox.SuspendLayout();
-            this.groupBox4.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox1.SuspendLayout();
+            this.groupBox4.SuspendLayout();
             this.verifyBox.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -69,7 +70,7 @@
             // 
             this.imageBox.Location = new System.Drawing.Point(258, 12);
             this.imageBox.Name = "imageBox";
-            this.imageBox.Size = new System.Drawing.Size(437, 534);
+            this.imageBox.Size = new System.Drawing.Size(437, 564);
             this.imageBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.imageBox.TabIndex = 1;
             this.imageBox.TabStop = false;
@@ -191,47 +192,6 @@
             this.processBox.TabStop = false;
             this.processBox.Text = "PREVIEW";
             // 
-            // groupBox4
-            // 
-            this.groupBox4.Controls.Add(this.analyzePreviewButton);
-            this.groupBox4.Controls.Add(this.analyzeGenerateButton);
-            this.groupBox4.Controls.Add(this.button3);
-            this.groupBox4.Location = new System.Drawing.Point(12, 428);
-            this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(240, 55);
-            this.groupBox4.TabIndex = 10;
-            this.groupBox4.TabStop = false;
-            this.groupBox4.Text = "ANALYZE";
-            // 
-            // analyzePreviewButton
-            // 
-            this.analyzePreviewButton.Location = new System.Drawing.Point(123, 23);
-            this.analyzePreviewButton.Name = "analyzePreviewButton";
-            this.analyzePreviewButton.Size = new System.Drawing.Size(111, 26);
-            this.analyzePreviewButton.TabIndex = 5;
-            this.analyzePreviewButton.Text = "Preview";
-            this.analyzePreviewButton.UseVisualStyleBackColor = true;
-            this.analyzePreviewButton.Click += new System.EventHandler(this.analyzePreviewButton_Click);
-            // 
-            // analyzeGenerateButton
-            // 
-            this.analyzeGenerateButton.Location = new System.Drawing.Point(6, 23);
-            this.analyzeGenerateButton.Name = "analyzeGenerateButton";
-            this.analyzeGenerateButton.Size = new System.Drawing.Size(114, 26);
-            this.analyzeGenerateButton.TabIndex = 4;
-            this.analyzeGenerateButton.Text = "Generate";
-            this.analyzeGenerateButton.UseVisualStyleBackColor = true;
-            this.analyzeGenerateButton.Click += new System.EventHandler(this.analyzeGenerateButton_Click);
-            // 
-            // button3
-            // 
-            this.button3.Location = new System.Drawing.Point(6, 115);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(228, 26);
-            this.button3.TabIndex = 2;
-            this.button3.Text = "Preview Markers";
-            this.button3.UseVisualStyleBackColor = true;
-            // 
             // groupBox3
             // 
             this.groupBox3.Controls.Add(this.previewImageProcessedButton);
@@ -314,22 +274,64 @@
             this.previewMarkersScanButton.UseVisualStyleBackColor = true;
             this.previewMarkersScanButton.Click += new System.EventHandler(this.previewMarkersScanButton_Click);
             // 
+            // groupBox4
+            // 
+            this.groupBox4.Controls.Add(this.analyzePreviewButton);
+            this.groupBox4.Controls.Add(this.analyzeGenerateButton);
+            this.groupBox4.Controls.Add(this.button3);
+            this.groupBox4.Location = new System.Drawing.Point(12, 428);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(240, 55);
+            this.groupBox4.TabIndex = 10;
+            this.groupBox4.TabStop = false;
+            this.groupBox4.Text = "ANALYZE";
+            // 
+            // analyzePreviewButton
+            // 
+            this.analyzePreviewButton.Location = new System.Drawing.Point(123, 23);
+            this.analyzePreviewButton.Name = "analyzePreviewButton";
+            this.analyzePreviewButton.Size = new System.Drawing.Size(111, 26);
+            this.analyzePreviewButton.TabIndex = 5;
+            this.analyzePreviewButton.Text = "Preview";
+            this.analyzePreviewButton.UseVisualStyleBackColor = true;
+            this.analyzePreviewButton.Click += new System.EventHandler(this.analyzePreviewButton_Click);
+            // 
+            // analyzeGenerateButton
+            // 
+            this.analyzeGenerateButton.Location = new System.Drawing.Point(6, 23);
+            this.analyzeGenerateButton.Name = "analyzeGenerateButton";
+            this.analyzeGenerateButton.Size = new System.Drawing.Size(114, 26);
+            this.analyzeGenerateButton.TabIndex = 4;
+            this.analyzeGenerateButton.Text = "Generate";
+            this.analyzeGenerateButton.UseVisualStyleBackColor = true;
+            this.analyzeGenerateButton.Click += new System.EventHandler(this.analyzeGenerateButton_Click);
+            // 
+            // button3
+            // 
+            this.button3.Location = new System.Drawing.Point(6, 115);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(228, 26);
+            this.button3.TabIndex = 2;
+            this.button3.Text = "Preview Markers";
+            this.button3.UseVisualStyleBackColor = true;
+            // 
             // verifyBox
             // 
+            this.verifyBox.Controls.Add(this.verifyPreviewOwnerButton);
             this.verifyBox.Controls.Add(this.verifyButton);
             this.verifyBox.Controls.Add(this.verifyAddButton);
             this.verifyBox.Location = new System.Drawing.Point(12, 489);
             this.verifyBox.Name = "verifyBox";
-            this.verifyBox.Size = new System.Drawing.Size(240, 57);
+            this.verifyBox.Size = new System.Drawing.Size(240, 87);
             this.verifyBox.TabIndex = 8;
             this.verifyBox.TabStop = false;
             this.verifyBox.Text = "VERIFY";
             // 
             // verifyButton
             // 
-            this.verifyButton.Location = new System.Drawing.Point(123, 21);
+            this.verifyButton.Location = new System.Drawing.Point(6, 53);
             this.verifyButton.Name = "verifyButton";
-            this.verifyButton.Size = new System.Drawing.Size(111, 26);
+            this.verifyButton.Size = new System.Drawing.Size(228, 26);
             this.verifyButton.TabIndex = 3;
             this.verifyButton.Text = "Verify Image";
             this.verifyButton.UseVisualStyleBackColor = true;
@@ -345,11 +347,21 @@
             this.verifyAddButton.UseVisualStyleBackColor = true;
             this.verifyAddButton.Click += new System.EventHandler(this.verifyAddButton_Click);
             // 
+            // verifyPreviewOwnerButton
+            // 
+            this.verifyPreviewOwnerButton.Location = new System.Drawing.Point(123, 21);
+            this.verifyPreviewOwnerButton.Name = "verifyPreviewOwnerButton";
+            this.verifyPreviewOwnerButton.Size = new System.Drawing.Size(111, 26);
+            this.verifyPreviewOwnerButton.TabIndex = 4;
+            this.verifyPreviewOwnerButton.Text = "Preview Owner";
+            this.verifyPreviewOwnerButton.UseVisualStyleBackColor = true;
+            this.verifyPreviewOwnerButton.Click += new System.EventHandler(this.verifyPreviewOwnerButton_Click);
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(707, 558);
+            this.ClientSize = new System.Drawing.Size(707, 588);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.verifyBox);
             this.Controls.Add(this.processBox);
@@ -361,9 +373,9 @@
             this.scanBox.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.processBox.ResumeLayout(false);
-            this.groupBox4.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
+            this.groupBox4.ResumeLayout(false);
             this.verifyBox.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -397,6 +409,7 @@
         private System.Windows.Forms.Button analyzePreviewButton;
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button loadMarkersButton;
+        private System.Windows.Forms.Button verifyPreviewOwnerButton;
     }
 }
 

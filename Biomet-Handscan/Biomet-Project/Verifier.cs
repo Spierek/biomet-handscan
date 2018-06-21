@@ -8,7 +8,7 @@ namespace Biomet_Project
         private List<double> m_Identity;
         public bool HasIdentity { get { return m_Identity != null; } }
 
-        private const double MIN_DISTANCE = 10;
+        private const double MIN_DISTANCE = 20;
 
         public void SetIdentity(List<double> identity)
         {

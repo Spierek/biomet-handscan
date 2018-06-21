@@ -25,7 +25,7 @@ namespace Biomet_Project
                 m_CurrentScanSettings = new ScanSettings
                 {
                     ShowProgressIndicatorUI = true,
-                    Resolution = ResolutionSettings.Photocopier,    // scan grayscale to make it faster
+                    Resolution = ResolutionSettings.ColourPhotocopier,
                     Rotation = new RotationSettings()
                     {
                         AutomaticRotate = true,

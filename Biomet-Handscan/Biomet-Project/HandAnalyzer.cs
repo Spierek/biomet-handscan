@@ -9,6 +9,9 @@ namespace Biomet_Project
 {
     public class HandAnalyzer
     {
+        private const int MAX_COUNT = 5;
+        private const int MIN_COUNT = 4;
+
         public List<Point> FindLongestPath(BitMatrix matrix)
         {
             List<List<Point>> paths = new List<List<Point>>();
@@ -211,7 +214,7 @@ namespace Biomet_Project
         }
 
         // returns 5 local max points (1 for each fingertip) and 4 local min points (spaces between fingers)
-        public void FindFingerPoints(List<Point> path, Point centroid, out List<APair<int, double>> maximums, out List<APair<int, double>> minimums)
+        public bool FindFingerPoints(List<Point> path, Point centroid, out List<APair<int, double>> maximums, out List<APair<int, double>> minimums)
         {
             // find distances to centroid for each path point
             List<double> distances = new List<double>();
@@ -228,7 +231,19 @@ namespace Biomet_Project
             List<double> blurredDistances = ListBlur(distances);
 
             maximums = FindMaximums(blurredDistances);
+            if (maximums.Count != MAX_COUNT)
+            {
+                minimums = new List<APair<int, double>>();
+                return false;
+            }
+
             minimums = FindMinimums(blurredDistances, maximums);
+            if (minimums.Count != MIN_COUNT)
+            {
+                return false;
+            }
+
+            return true;
         }
 
         // calculates distances between max/min points and surface areas for each finger
@@ -279,14 +294,14 @@ namespace Biomet_Project
             }
 
             // find point after last hole
-            postI = maximums[4].First * 2 - minimums[3].First;
+            postI = maximums[MAX_COUNT].First * 2 - minimums[MIN_COUNT].First;
             postHole = path[postI];
 
-            while (BitMatrix.Distance(postHole, fingers[4]) < BitMatrix.Distance(fingers[4], holes[3]) && postI < path.Count - 1)
+            while (BitMatrix.Distance(postHole, fingers[MAX_COUNT]) < BitMatrix.Distance(fingers[MAX_COUNT], holes[MIN_COUNT]) && postI < path.Count - 1)
             {
                 postHole = path[++postI];
             }
-            while (BitMatrix.Distance(postHole, fingers[4]) > BitMatrix.Distance(fingers[4], holes[3]) && postI >= 0)
+            while (BitMatrix.Distance(postHole, fingers[MAX_COUNT]) > BitMatrix.Distance(fingers[MAX_COUNT], holes[MIN_COUNT]) && postI >= 0)
             {
                 postHole = path[--postI];
             }
@@ -345,7 +360,10 @@ namespace Biomet_Project
 
             // narrow down to 5 highest results
             maximums = maximums.OrderByDescending(o => o.Second).ToList();
-            maximums.RemoveRange(5, maximums.Count - 5);
+            if (maximums.Count >= MAX_COUNT)
+            {
+                maximums.RemoveRange(MAX_COUNT, maximums.Count - MAX_COUNT);
+            }
 
             // re-sort by occurence
             maximums = maximums.OrderBy(o => o.First).ToList();
@@ -356,7 +374,7 @@ namespace Biomet_Project
         private List<APair<int, double>> FindMinimums(List<double> distances, List<APair<int, double>> maximums)
         {
             List<APair<int, double>> minimums = new List<APair<int, double>>();
-            for (int i = 0; i < 4; ++i)
+            for (int i = 0; i < MIN_COUNT; ++i)
             {
                 int minJ = maximums[i].First;
                 double minV = maximums[i].Second;
