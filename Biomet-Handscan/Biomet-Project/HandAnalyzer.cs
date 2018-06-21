@@ -220,7 +220,7 @@ namespace Biomet_Project
                 Point p = path[i];
                 if (p != null)
                 {
-                    double dist = Distance(p, centroid);
+                    double dist = BitMatrix.Distance(p, centroid);
                     distances.Add(dist);
                 }
             }
@@ -232,7 +232,7 @@ namespace Biomet_Project
         }
 
         // calculates distances between max/min points and surface areas for each finger
-        public List<double> FindFingerFeatures(List<Point> path, List<APair<int, double>> maximums, List<APair<int, double>> minimums)
+        public List<double> FindFingerFeatures(BitMatrix bm, List<Point> path, Point centroid, List<APair<int, double>> maximums, List<APair<int, double>> minimums)
         {
             // get finger/hole points
             List<Point> fingers = new List<Point>();
@@ -249,16 +249,16 @@ namespace Biomet_Project
             List<double> features = new List<double>
             {
                 // first add left side distances
-                Distance(fingers[0], holes[0]),
-                Distance(fingers[1], holes[1]),
-                Distance(fingers[2], holes[2]),
-                Distance(fingers[3], holes[3]),
+                BitMatrix.Distance(fingers[0], holes[0]),
+                BitMatrix.Distance(fingers[1], holes[1]),
+                BitMatrix.Distance(fingers[2], holes[2]),
+                BitMatrix.Distance(fingers[3], holes[3]),
 
                 // then add right side distances
-                Distance(fingers[1], holes[0]),
-                Distance(fingers[2], holes[1]),
-                Distance(fingers[3], holes[2]),
-                Distance(fingers[4], holes[3])
+                BitMatrix.Distance(fingers[1], holes[0]),
+                BitMatrix.Distance(fingers[2], holes[1]),
+                BitMatrix.Distance(fingers[3], holes[2]),
+                BitMatrix.Distance(fingers[4], holes[3])
             };
 
             // now find points before and after first hole to calculate surface areas
@@ -269,11 +269,11 @@ namespace Biomet_Project
             Point postHole;
 
             // find point before first hole
-            while (Distance(preHole, fingers[0]) < Distance(fingers[0], holes[0]))
+            while (BitMatrix.Distance(preHole, fingers[0]) < BitMatrix.Distance(fingers[0], holes[0]))
             {
                 preHole = path[--preI];
             }
-            while (Distance(preHole, fingers[0]) > Distance(fingers[0], holes[0]))
+            while (BitMatrix.Distance(preHole, fingers[0]) > BitMatrix.Distance(fingers[0], holes[0]))
             {
                 preHole = path[++preI];
             }
@@ -282,26 +282,25 @@ namespace Biomet_Project
             postI = maximums[4].First * 2 - minimums[3].First;
             postHole = path[postI];
 
-            while (Distance(postHole, fingers[4]) < Distance(fingers[4], holes[3]))
+            while (BitMatrix.Distance(postHole, fingers[4]) < BitMatrix.Distance(fingers[4], holes[3]))
             {
                 postHole = path[++postI];
             }
-            while (Distance(postHole, fingers[4]) > Distance(fingers[4], holes[3]))
+            while (BitMatrix.Distance(postHole, fingers[4]) > BitMatrix.Distance(fingers[4], holes[3]))
             {
                 postHole = path[--postI];
             }
 
+            BitMatrix fbm = new BitMatrix(bm);
+            fbm.FillArea(centroid);
 
+            //features.Add(Math.Sqrt(bm.GetSurface(fbm, preHole, holes[0])));
+            //features.Add(Math.Sqrt(bm.GetSurface(fbm, holes[0], holes[1])));
+            //features.Add(Math.Sqrt(bm.GetSurface(fbm, holes[1], holes[2])));
+            //features.Add(Math.Sqrt(bm.GetSurface(fbm, holes[2], holes[3])));
+            //features.Add(Math.Sqrt(bm.GetSurface(fbm, holes[3], postHole)));
 
             return features;
-        }
-
-        // √((x2−x1)^2+(y2−y1)^2)
-        private double Distance(Point a, Point b)
-        {
-            double x = Math.Pow((b.X - a.X), 2);
-            double y = Math.Pow((b.Y - a.Y), 2);
-            return Math.Sqrt(x + y);
         }
 
         // blur contents to get rid of sudden max/min spikes

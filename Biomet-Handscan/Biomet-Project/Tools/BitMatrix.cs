@@ -1,6 +1,8 @@
-﻿using System;
+﻿using LSTools;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 namespace Kaliko.ImageLibrary.BitFilters
 {
@@ -177,6 +179,36 @@ namespace Kaliko.ImageLibrary.BitFilters
             }
         }
 
+        private int GetByteCount()
+        {
+            int bitCount = m_Width * m_Height;
+            int byteCount = bitCount >> 3;
+            if (bitCount % 8 != 0)
+            {
+                byteCount++;
+            }
+
+            return byteCount;
+        }
+
+        public void ApplyFilter(IBitFilter filter)
+        {
+            filter.Run(this);
+        }
+
+        public bool IsPointCorrect(int x, int y)
+        {
+            return (x >= 0 && x < Width && y >= 0 && y < Height);
+        }
+
+        // √((x2−x1)^2+(y2−y1)^2)
+        public static double Distance(Point a, Point b)
+        {
+            double x = Math.Pow((b.X - a.X), 2);
+            double y = Math.Pow((b.Y - a.Y), 2);
+            return Math.Sqrt(x + y);
+        }
+
         // iteratively fills an area around the specified point until reaching any edges
         public int FillArea(Point p)
         {
@@ -224,26 +256,91 @@ namespace Kaliko.ImageLibrary.BitFilters
             return ret;
         }
 
-        private int GetByteCount()
+        public int GetSurface(BitMatrix fbm, Point a, Point b, out BitMatrix cbm)
         {
-            int bitCount = m_Width * m_Height;
-            int byteCount = bitCount >> 3;
-            if (bitCount % 8 != 0)
+            Point[,] previous = new Point[fbm.Width, fbm.Height];
+            BitMatrix cfbm = new BitMatrix(fbm);
+            List<Point> thisLayer = new List<Point>() { a };
+            List<Point> nextLayer = new List<Point>();
+            List<Point> path = new List<Point>();
+
+            while (thisLayer.Count > 0)
             {
-                byteCount++;
+                nextLayer.Clear();
+
+                for (int i = 0; i < thisLayer.Count; ++i)
+                {
+                    int x = thisLayer[i].X;
+                    int y = thisLayer[i].Y;
+
+                    List<APair<Point, double>> considerable = new List<APair<Point, double>>();
+                    if (x > 0 && IsPointCorrect(x, y - 1) && cfbm[x, y - 1])
+                    {
+                        Point t = new Point(x, y - 1);
+                        cfbm[t.X, t.Y] = false;
+                        previous[t.X, t.Y] = thisLayer[i];
+                        considerable.Add(new APair<Point, double>(t, Distance(t, b)));
+                    }
+                    if (y < Height - 1 && IsPointCorrect(x + 1, y) && cfbm[x + 1, y])
+                    {
+                        Point t = new Point(x + 1, y);
+                        cfbm[t.X, t.Y] = false;
+                        previous[t.X, t.Y] = thisLayer[i];
+                        considerable.Add(new APair<Point, double>(t, Distance(t, b)));
+                    }
+                    if (x < Width - 1 && IsPointCorrect(x, y + 1) && cfbm[x, y + 1])
+                    {
+                        Point t = new Point(x, y + 1);
+                        cfbm[t.X, t.Y] = false;
+                        previous[t.X, t.Y] = thisLayer[i];
+                        considerable.Add(new APair<Point, double>(t, Distance(t, b)));
+                    }
+                    if (y > 0 && IsPointCorrect(x - 1, y) && cfbm[x - 1, y])
+                    {
+                        Point t = new Point(x - 1, y);
+                        cfbm[t.X, t.Y] = false;
+                        previous[t.X, t.Y] = thisLayer[i];
+                        considerable.Add(new APair<Point, double>(t, Distance(t, b)));
+                    }
+
+                    considerable = considerable.OrderBy(o => o.Second).ToList();
+
+                    for (int j = 0; j < considerable.Count; ++j)
+                    {
+                        nextLayer.Add(considerable[j].First);
+                    }
+                }
+
+                thisLayer = new List<Point>();
+                thisLayer.InsertRange(0, nextLayer);
             }
 
-            return byteCount;
-        }
+            cbm = new BitMatrix(this);
 
-        public void ApplyFilter(IBitFilter filter)
-        {
-            filter.Run(this);
-        }
+            for (Point t = b; t.X != a.X || t.Y != a.Y; )
+            {
+                path.Add(t);
+                cbm[t.X, t.Y] = true;
+                t = previous[t.X, t.Y];
+            }
+            cbm.FillArea(new Point(0, 0));
 
-        public bool IsPointCorrect(int x, int y)
-        {
-            return (x >= 0 && x < Width && y >= 0 && y < Height);
+            List<int> blackSurfaces = new List<int>();
+            for (int r = 0; r < cbm.Width; ++r)
+            {
+                for (int c = 0; c < cbm.Height; ++c)
+                {
+                    if (!cbm[r, c])
+                    {
+                        blackSurfaces.Add(cbm.FillArea(new Point(c, r)));
+                    }
+                }
+            }
+
+            blackSurfaces.Sort();
+
+            //return blackSurfaces[blackSurfaces.Count - 2];
+            return 0;
         }
     }
 }

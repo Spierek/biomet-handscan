@@ -229,7 +229,7 @@ namespace Biomet_Project
             m_HandAnalyzer.FindFingerPoints(path, centroid, out maximums, out minimums);
 
             // find finger lengths and surface areas
-            List<double> distances = m_HandAnalyzer.FindFingerFeatures(path, maximums, minimums);
+            List<double> distances = m_HandAnalyzer.FindFingerFeatures(matrix, path, centroid, maximums, minimums);
 
             // path preview
             BitMatrix pathMatrix = new BitMatrix(matrix.Width, matrix.Height);
