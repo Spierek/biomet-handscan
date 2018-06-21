@@ -91,8 +91,16 @@ namespace Biomet_Project
                             // check if examined point has not been merged with any other path yet
                             if (!pathMerged[np])
                             {
-                                paths[np].Reverse();
-                                paths[np].InsertRange(0, paths[op]);
+                                if (np < op)
+                                {
+                                    paths[np].Reverse();
+                                    paths[np].InsertRange(0, paths[op]);
+                                }
+                                else
+                                {
+                                    paths[op].Reverse();
+                                    paths[np].InsertRange(paths[np].Count, paths[op]);
+                                }
 
                                 paths[op].Clear();
                                 pathMerged[np] = true;
@@ -278,17 +286,24 @@ namespace Biomet_Project
 
             // now find points before and after first hole to calculate surface areas
             int preI = maximums[0].First * 2 - minimums[0].First;
-            int postI;
+            if (preI < 0)
+            {
+                preI = 0;
+            }
+            else if (preI > path.Count - 1)
+            {
+                preI = path.Count - 1;
+            }
 
             Point preHole = path[preI];
             Point postHole;
 
             // find point before first hole
-            while (BitMatrix.Distance(preHole, fingers[0]) < BitMatrix.Distance(fingers[0], holes[0]))
+            while (preI >= 1 && BitMatrix.Distance(preHole, fingers[0]) < BitMatrix.Distance(fingers[0], holes[0]))
             {
                 preHole = path[--preI];
             }
-            while (BitMatrix.Distance(preHole, fingers[0]) > BitMatrix.Distance(fingers[0], holes[0]))
+            while (preI < path.Count - 2 && BitMatrix.Distance(preHole, fingers[0]) > BitMatrix.Distance(fingers[0], holes[0]))
             {
                 preHole = path[++preI];
             }
@@ -296,14 +311,22 @@ namespace Biomet_Project
             // find point after last hole
             int maxId = MAX_COUNT - 1;
             int minId = MIN_COUNT - 1;
-            postI = maximums[maxId].First * 2 - minimums[minId].First;
+            int postI = maximums[maxId].First * 2 - minimums[minId].First;
+            if (postI < 0)
+            {
+                postI = 0;
+            }
+            else if (postI > path.Count - 1)
+            {
+                postI = path.Count - 1;
+            }
             postHole = path[postI];
 
-            while (BitMatrix.Distance(postHole, fingers[maxId]) < BitMatrix.Distance(fingers[maxId], holes[minId]) && postI < path.Count - 1)
+            while (postI < path.Count - 2 && BitMatrix.Distance(postHole, fingers[maxId]) < BitMatrix.Distance(fingers[maxId], holes[minId]))
             {
                 postHole = path[++postI];
             }
-            while (BitMatrix.Distance(postHole, fingers[maxId]) > BitMatrix.Distance(fingers[maxId], holes[minId]) && postI >= 0)
+            while (postI >= 1 && BitMatrix.Distance(postHole, fingers[maxId]) > BitMatrix.Distance(fingers[maxId], holes[minId]))
             {
                 postHole = path[--postI];
             }
