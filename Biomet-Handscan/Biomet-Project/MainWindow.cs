@@ -26,6 +26,14 @@ namespace Biomet_Project
         // final composite (image - markers)
         private KalikoImage m_FinalComposite;
 
+        // feature images
+        private KalikoImage m_FeaturesOutline;
+        private KalikoImage m_FeaturesPoints;
+
+        // verification data
+        private List<double> m_VerificationScanFeatures;
+        private List<double> m_VerificationSavedFeatures;
+
         private const string MARKERS_EMPTY_PATH = @"C:\Projects\Biomet-Handscan\markers_empty.jpg";
         private const string A1_PATH = @"C:\Projects\Biomet-Handscan\handA1_color.jpg";
         private const string A2_PATH = @"C:\Projects\Biomet-Handscan\handA2_color.jpg";
@@ -73,6 +81,7 @@ namespace Biomet_Project
             previewImageScanButton.Enabled = false;
             previewImageProcessedButton.Enabled = false;
             previewOutlineButton.Enabled = false;
+            previewPointsButton.Enabled = false;
 
             verifyAddButton.Enabled = false;
             verifyButton.Enabled = false;
@@ -168,6 +177,7 @@ namespace Biomet_Project
 
                 m_ScannedImage = bitmap;
                 m_ProcessedImage = m_ImageProcessor.GetProcessedImage(m_ScannedImage, m_ProcessedMarkers);
+                m_VerificationScanFeatures = PrepareFeatures();
                 if (preview)
                 {
                     DisplayBitmap(m_ScannedImage);
@@ -176,6 +186,13 @@ namespace Biomet_Project
                 previewImageScanButton.Enabled = true;
                 previewImageProcessedButton.Enabled = true;
                 previewOutlineButton.Enabled = true;
+                previewPointsButton.Enabled = true;
+                verifyAddButton.Enabled = true;
+
+                if (m_VerificationSavedFeatures != null)
+                {
+                    verifyButton.Enabled = true;
+                }
             }
         }
 
@@ -199,9 +216,20 @@ namespace Biomet_Project
             DisplayBitmap(m_ProcessedImage.GetAsBitmap());
         }
 
+        private void previewOutlineButton_Click(object sender, EventArgs e)
+        {
+            DisplayBitmap(m_FeaturesOutline.GetAsBitmap());
+        }
+
+        private void previewPointsButton_Click(object sender, EventArgs e)
+        {
+            DisplayBitmap(m_FeaturesPoints.GetAsBitmap());
+        }
+
         private void verifyAddButton_Click(object sender, EventArgs e)
         {
-
+            m_VerificationSavedFeatures = m_VerificationScanFeatures;
+            verifyButton.Enabled = true;
         }
 
         private void verifyButton_Click(object sender, EventArgs e)
@@ -209,12 +237,7 @@ namespace Biomet_Project
 
         }
 
-        private void previewFinalButton_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void previewOutlineButton_Click(object sender, EventArgs e)
+        private List<double> PrepareFeatures()
         {
             BitMatrix matrix = new BitMatrix(m_ProcessedImage);
             List<Point> path = m_HandAnalyzer.FindLongestPath(matrix);
@@ -227,29 +250,30 @@ namespace Biomet_Project
             m_HandAnalyzer.FindFingerPoints(path, centroid, out maximums, out minimums);
 
             // find finger lengths and surface areas
-            List<double> distances = m_HandAnalyzer.FindFingerFeatures(matrix, path, centroid, maximums, minimums);
+            List<double> features = m_HandAnalyzer.FindFingerFeatures(matrix, path, centroid, maximums, minimums);
 
             // path preview
             BitMatrix pathMatrix = new BitMatrix(matrix.Width, matrix.Height);
             pathMatrix.SetPoints(path, true);
+            m_FeaturesOutline = pathMatrix.ToImage();
 
             // centroid preview
-            KalikoImage pathImage = pathMatrix.ToImage();
-            pathImage.DrawMarker(centroid, Color.Magenta, 4);
+            m_FeaturesPoints = pathMatrix.ToImage();
+            m_FeaturesPoints.DrawMarker(centroid, Color.Magenta, 4);
 
             // finger points preview
             for (int i = 0; i < 5; ++i)
             {
                 Point p = path[maximums[i].First];
-                pathImage.DrawMarker(p, Color.Green, 4);
+                m_FeaturesPoints.DrawMarker(p, Color.Green, 4);
             }
             for (int i = 0; i < 4; ++i)
             {
                 Point p = path[minimums[i].First];
-                pathImage.DrawMarker(p, Color.Yellow, 4);
+                m_FeaturesPoints.DrawMarker(p, Color.Yellow, 4);
             }
 
-            DisplayBitmap(pathImage.GetAsBitmap());
+            return features;
         }
 
         // DEBUG
