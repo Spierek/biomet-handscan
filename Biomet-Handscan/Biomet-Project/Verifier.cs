@@ -27,7 +27,8 @@ namespace Biomet_Project
 
             for (int i = 0; i < a.Count && i < b.Count; ++i)
             {
-                sqSum += (a[i] - b[i]) * (a[i] - b[i]);
+                double sub = a[i] - b[i];
+                sqSum += sub * sub;
             }
 
             return Math.Sqrt(sqSum);

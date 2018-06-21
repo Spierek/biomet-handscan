@@ -294,14 +294,16 @@ namespace Biomet_Project
             }
 
             // find point after last hole
-            postI = maximums[MAX_COUNT].First * 2 - minimums[MIN_COUNT].First;
+            int maxId = MAX_COUNT - 1;
+            int minId = MIN_COUNT - 1;
+            postI = maximums[maxId].First * 2 - minimums[minId].First;
             postHole = path[postI];
 
-            while (BitMatrix.Distance(postHole, fingers[MAX_COUNT]) < BitMatrix.Distance(fingers[MAX_COUNT], holes[MIN_COUNT]) && postI < path.Count - 1)
+            while (BitMatrix.Distance(postHole, fingers[maxId]) < BitMatrix.Distance(fingers[maxId], holes[minId]) && postI < path.Count - 1)
             {
                 postHole = path[++postI];
             }
-            while (BitMatrix.Distance(postHole, fingers[MAX_COUNT]) > BitMatrix.Distance(fingers[MAX_COUNT], holes[MIN_COUNT]) && postI >= 0)
+            while (BitMatrix.Distance(postHole, fingers[maxId]) > BitMatrix.Distance(fingers[maxId], holes[minId]) && postI >= 0)
             {
                 postHole = path[--postI];
             }
@@ -309,6 +311,7 @@ namespace Biomet_Project
             BitMatrix fbm = new BitMatrix(bm);
             fbm.FillArea(centroid);
 
+            // #TODO LS generate surface area data
             //features.Add(Math.Sqrt(bm.GetSurface(fbm, preHole, holes[0])));
             //features.Add(Math.Sqrt(bm.GetSurface(fbm, holes[0], holes[1])));
             //features.Add(Math.Sqrt(bm.GetSurface(fbm, holes[1], holes[2])));
