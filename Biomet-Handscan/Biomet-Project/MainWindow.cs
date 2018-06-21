@@ -14,6 +14,7 @@ namespace Biomet_Project
         private ScanManager m_ScanManager;
         private ImageProcessor m_ImageProcessor;
         private HandAnalyzer m_HandAnalyzer;
+        private Verifier m_Verifier;
 
         // scanner input
         private Bitmap m_ScannedImage;
@@ -23,16 +24,16 @@ namespace Biomet_Project
         private KalikoImage m_ProcessedImage;
         private KalikoImage m_ProcessedMarkers;
 
-        // final composite (image - markers)
-        private KalikoImage m_FinalComposite;
-
         // feature images
         private KalikoImage m_FeaturesOutline;
         private KalikoImage m_FeaturesPoints;
 
         // verification data
         private List<double> m_VerificationScanFeatures;
-        private List<double> m_VerificationSavedFeatures;
+
+        private Color m_VerifyColorBase;
+        private Color m_VerifyColorCorrect = Color.LightGreen;
+        private Color m_VerifyColorIncorrect = Color.Pink;
 
         private const string MARKERS_EMPTY_PATH = @"C:\Projects\Biomet-Handscan\markers_empty.jpg";
         private const string A1_PATH = @"C:\Projects\Biomet-Handscan\handA1_color.jpg";
@@ -44,8 +45,9 @@ namespace Biomet_Project
             InitializeComponent();
 
             InitializeScanning();
-            InitializeProcessor();
-            InitializeDetector();
+            m_ImageProcessor = new ImageProcessor();
+            m_HandAnalyzer = new HandAnalyzer();
+            m_Verifier = new Verifier();
 
             InitializeInput();
         }
@@ -57,18 +59,10 @@ namespace Biomet_Project
             scanSourceLabel.Text = m_ScanManager.GetActiveSourceLabel();
         }
 
-        private void InitializeProcessor()
-        {
-            m_ImageProcessor = new ImageProcessor();
-        }
-
-        private void InitializeDetector()
-        {
-            m_HandAnalyzer = new HandAnalyzer();
-        }
-
         private void InitializeInput()
         {
+            m_VerifyColorBase = verifyButton.BackColor;
+
             PreviewKeyDown += HandleEscPressed;
 
             // disable all buttons (except debug) by default
@@ -189,9 +183,10 @@ namespace Biomet_Project
                 previewPointsButton.Enabled = true;
                 verifyAddButton.Enabled = true;
 
-                if (m_VerificationSavedFeatures != null)
+                if (m_Verifier.HasIdentity)
                 {
                     verifyButton.Enabled = true;
+                    verifyButton.BackColor = m_VerifyColorBase;
                 }
             }
         }
@@ -228,13 +223,15 @@ namespace Biomet_Project
 
         private void verifyAddButton_Click(object sender, EventArgs e)
         {
-            m_VerificationSavedFeatures = m_VerificationScanFeatures;
+            m_Verifier.SetIdentity(m_VerificationScanFeatures);
             verifyButton.Enabled = true;
+            verifyButton.BackColor = m_VerifyColorBase;
         }
 
         private void verifyButton_Click(object sender, EventArgs e)
         {
-
+            bool result = m_Verifier.Verify(m_VerificationScanFeatures);
+            verifyButton.BackColor = result ? m_VerifyColorCorrect : m_VerifyColorIncorrect;
         }
 
         private List<double> PrepareFeatures()
